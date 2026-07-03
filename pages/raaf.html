@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="../Assets/Logo/dilg-icon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../style/layout.css" />
+    <title>SR-AUDIT SYSTEM | RAAF Form</title>
+    <script src="../javascript/auth.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        corePlugins: {
+          preflight: false,
+        }
+      }
+    </script>
+    <style>
+      .raaf-container { max-width: 1200px; margin: 0 auto; }
+      
+      /* Tailwind border preflight fallback for raaf-container */
+      .raaf-container *, .raaf-container ::before, .raaf-container ::after {
+        border-width: 0;
+        border-style: solid;
+        border-color: #e2e8f0;
+      }
+      
+      .no-print { display: block; }
+      @media print {
+        body { background: white !important; color: black !important; }
+        .no-print { display: none !important; }
+        .sidebar, .topbar { display: none !important; }
+        .page-shell { margin-left: 0 !important; padding: 0 !important; }
+        .content { padding: 0 !important; margin: 0 !important; }
+        .print-section { display: block !important; padding: 40px; background: white; border: none; box-shadow: none; margin: 0; }
+      }
+
+      /* Original Print Styles */
+      .print-section { display: block; border: 2px dashed #999; padding: 30px; margin-top: 30px; background: white; page-break-inside: avoid; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+      .print-header { text-align: center; margin-bottom: 20px; font-size: 0.95rem; line-height: 1.6; }
+      .print-header h3 { margin: 0 0 10px 0; font-size: 1.1rem; font-weight: 700; text-decoration: underline; }
+      .print-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 40px; margin-bottom: 20px; font-size: 0.9rem; }
+      .print-meta-row { display: flex; justify-content: space-between; min-width: 250px; }
+      .print-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.85rem; }
+      .print-table td, .print-table th { border: 1px solid #000; padding: 8px; text-align: center; }
+      .print-table th { font-weight: 700; background: #f5f5f5; vertical-align: middle; }
+      .print-table td.label { text-align: left; font-weight: 600; }
+      .print-table td.sub-label { text-align: left; padding-left: 20px; font-weight: normal; }
+      .print-cert { margin-top: 30px; font-size: 0.85rem; line-height: 1.6; }
+      .print-cert-text { margin-bottom: 40px; }
+      .print-sig-row { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin-top: 40px; font-size: 0.85rem; }
+      .print-sig-line { border-top: 1px solid #000; padding-top: 8px; }
+
+      .connected-summary-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+      .connected-summary-table th, .connected-summary-table td { border: 1px solid #000; padding: 6px; text-align: left; }
+      .connected-summary-table th { background: #f5f5f5; font-weight: 700; }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <img src="../Assets/Logo/dilg-logo.png" alt="DILG Logo" class="brand-logo" />
+          <span>SR-AUDIT SYSTEM</span>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="indeex.html" class="nav-link"><i class="fa-solid fa-chart-line" style="margin-right: 8px;"></i> Dashboard</a>
+          <a href="inventory.html" class="nav-link"><i class="fa-solid fa-boxes-stacked" style="margin-right: 8px;"></i> Inventory</a>
+          <a href="financial.html" class="nav-link"><i class="fa-solid fa-wallet" style="margin-right: 8px;"></i> Financial</a>
+          <a href="documents.html" class="nav-link"><i class="fa-solid fa-file-invoice" style="margin-right: 8px;"></i> Documents</a>
+          <a href="#" onclick="handleLogout()" class="nav-link" style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.15); border-radius: 0; padding-top: 20px;"><i class="fa-solid fa-right-from-bracket" style="margin-right: 8px;"></i> Logout</a>
+        </nav>
+      </aside>
+
+      <div class="page-shell">
+        <header class="topbar">
+          <div class="topbar-left">
+            <img src="../Assets/Logo/dilg-icon.ico" alt="App icon" class="topbar-icon" />
+            <div>
+              <p class="eyebrow">Barangay Audit & Transition System</p>
+              <h1>SR-AUDIT SYSTEM (City of Santa Rosa)</h1>
+            </div>
+          </div>
+        </header>
+
+        <main class="content raaf-container">
+          <div class="space-y-8">
+            <header class="space-y-3">
+              <p class="text-sm uppercase tracking-[0.3em] text-slate-500">Financial Audit Workflow</p>
+              <h1 class="text-3xl font-semibold">RAAF Data Entry + Print Preview</h1>
+              <p class="text-slate-600 max-w-3xl">Complete the audit inputs below and the live print-ready RAAF document updates instantly. Use the button to print or save the official RAAF PDF.</p>
+            </header>
+
+            <div class="space-y-6 no-print">
+
+              <!-- Meta Data Section for RAAF Header -->
+              <section class="space-y-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h3 class="text-base font-semibold text-slate-900">RAAF Meta Details</h3>
+                <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+                  <label class="space-y-2 text-sm text-slate-700 block">
+                    Month
+                    <input id="inp-month" type="text" class="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                  </label>
+                  <label class="space-y-2 text-sm text-slate-700 block">
+                    Year
+                    <input id="inp-year" type="text" class="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                  </label>
+                  <label class="space-y-2 text-sm text-slate-700 block">
+                    Barangay
+                    <input id="inp-barangay" type="text" class="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                  </label>
+                  <label class="space-y-2 text-sm text-slate-700 block">
+                    RAAF No.
+                    <input id="inp-raaf" type="text" class="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                  </label>
+                  <label class="space-y-2 text-sm text-slate-700 block md:col-span-2">
+                    Barangay Treasurer
+                    <input id="inp-treasurer" type="text" class="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                  </label>
+                  <label class="space-y-2 text-sm text-slate-700 block">
+                    City/Municipality
+                    <input id="inp-city" type="text" class="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                  </label>
+                  <label class="space-y-2 text-sm text-slate-700 block">
+                    Province
+                    <input id="inp-province" type="text" class="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                  </label>
+                </div>
+              </section>
+
+              <section class="space-y-6">
+                <div class="flex items-center justify-between gap-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                  <div>
+                    <p class="text-slate-500 uppercase tracking-[0.2em] text-xs">Connected RAAF Forms</p>
+                    <h2 class="text-xl font-semibold">Separate Audit Forms</h2>
+                    <p class="text-sm text-slate-600 max-w-2xl">Each form below is separate but still connected to the official RAAF print document. Complete the fields and the live RAAF preview will reflect the values immediately.</p>
+                  </div>
+                </div>
+
+                <div class="grid gap-6 lg:grid-cols-2">
+                  <div class="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                    <h3 class="text-base font-semibold text-slate-900">Approved Budget</h3>
+                    <label class="space-y-2 text-sm text-slate-700 block">
+                      Authorized Amount
+                      <input data-sync-target="approved-budget" id="input-approved-budget" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="0.00" />
+                    </label>
+                    <label class="space-y-2 text-sm text-slate-700 block">
+                      Remarks / Recommendations
+                      <textarea data-sync-target="approved-budget-remarks" id="input-approved-budget-remarks" rows="4" class="w-full resize-none rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="Approved budget remarks..."></textarea>
+                    </label>
+                  </div>
+
+                  <div class="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                    <h3 class="text-base font-semibold text-slate-900">Fidelity Bond</h3>
+                    <label class="space-y-2 text-sm text-slate-700 block">
+                      Coverage Amount
+                      <input data-sync-target="bond-coverage" id="input-bond-coverage" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="0.00" />
+                    </label>
+                    <label class="space-y-2 text-sm text-slate-700 block">
+                      Expiry Date
+                      <input data-sync-target="bond-expiry" id="input-bond-expiry" type="date" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                    </label>
+                    <label class="space-y-2 text-sm text-slate-700 block">
+                      Remarks / Recommendations
+                      <textarea data-sync-target="bond-remarks" id="input-bond-remarks" rows="4" class="w-full resize-none rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="Bond remarks..."></textarea>
+                    </label>
+                  </div>
+
+                  <div class="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                    <h3 class="text-base font-semibold text-slate-900">Bank Book</h3>
+                    <label class="space-y-2 text-sm text-slate-700 block">
+                      Ending Balance
+                      <input data-sync-target="bank-book-balance" id="input-bank-book-balance" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="0.00" />
+                    </label>
+                    <label class="space-y-2 text-sm text-slate-700 block">
+                      Remarks / Recommendations
+                      <textarea data-sync-target="bank-book-remarks" id="input-bank-book-remarks" rows="4" class="w-full resize-none rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="Bank book remarks..."></textarea>
+                    </label>
+                  </div>
+
+                  <div class="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                    <h3 class="text-base font-semibold text-slate-900">Check Register Book & Physical Checks</h3>
+                    <div class="grid gap-4 sm:grid-cols-3">
+                      <label class="space-y-2 text-sm text-slate-700 block">
+                        Beginning Balance Qty
+                        <input id="b2-bb-qty" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                      </label>
+                      <label class="space-y-2 text-sm text-slate-700 block">
+                        From Serial
+                        <input id="b2-bb-from" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                      </label>
+                      <label class="space-y-2 text-sm text-slate-700 block">
+                        To Serial
+                        <input id="b2-bb-to" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                      </label>
+                    </div>
+                    <div class="grid gap-4 sm:grid-cols-3">
+                      <label class="space-y-2 text-sm text-slate-700 block">
+                        Receipt Qty
+                        <input id="b2-rc-qty" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                      </label>
+                      <label class="space-y-2 text-sm text-slate-700 block">
+                        From Serial
+                        <input id="b2-rc-from" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                      </label>
+                      <label class="space-y-2 text-sm text-slate-700 block">
+                        To Serial
+                        <input id="b2-rc-to" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                      </label>
+                    </div>
+                    <div class="grid gap-4 sm:grid-cols-3">
+                      <label class="space-y-2 text-sm text-slate-700 block">
+                        Ending Balance Qty
+                        <input id="b2-eb-qty" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                      </label>
+                      <label class="space-y-2 text-sm text-slate-700 block">
+                        From Serial
+                        <input id="b2-eb-from" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                      </label>
+                      <label class="space-y-2 text-sm text-slate-700 block">
+                        To Serial
+                        <input id="b2-eb-to" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                      </label>
+                    </div>
+                    <label class="space-y-2 text-sm text-slate-700 block">
+                      Remarks / Recommendations
+                      <textarea data-sync-target="checks-remarks" id="input-checks-remarks" rows="4" class="w-full resize-none rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="Notes for checks..."></textarea>
+                    </label>
+                  </div>
+
+                  <div class="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                    <h3 class="text-base font-semibold text-slate-900">Accountable Form 51 (AF-51 Receipts)</h3>
+                    <div class="grid gap-4 sm:grid-cols-3">
+                      <label class="space-y-2 text-sm text-slate-700 block">
+                        Beginning Balance Qty
+                        <input id="b1-bb-qty" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                      </label>
+                      <label class="space-y-2 text-sm text-slate-700 block">
+                        From Serial
+                        <input id="b1-bb-from" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="XXXX" />
+                      </label>
+                      <label class="space-y-2 text-sm text-slate-700 block">
+                        To Serial
+                        <input id="b1-bb-to" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="XXXX" />
+                      </label>
+                    </div>
+                    <div class="grid gap-4 sm:grid-cols-3">
+                      <label class="space-y-2 text-sm text-slate-700 block">
+                        Receipt Qty
+                        <input id="b1-rc-qty" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                      </label>
+                      <label class="space-y-2 text-sm text-slate-700 block">
+                        From Serial
+                        <input id="b1-rc-from" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                      </label>
+                      <label class="space-y-2 text-sm text-slate-700 block">
+                        To Serial
+                        <input id="b1-rc-to" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                      </label>
+                    </div>
+                    <div class="grid gap-4 sm:grid-cols-3">
+                      <label class="space-y-2 text-sm text-slate-700 block">
+                        Ending Balance Qty
+                        <input id="b1-eb-qty" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                      </label>
+                      <label class="space-y-2 text-sm text-slate-700 block">
+                        From Serial
+                        <input id="b1-eb-from" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                      </label>
+                      <label class="space-y-2 text-sm text-slate-700 block">
+                        To Serial
+                        <input id="b1-eb-to" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                      </label>
+                    </div>
+                    <label class="space-y-2 text-sm text-slate-700 block">
+                      Remarks / Recommendations
+                      <textarea data-sync-target="af51-remarks" id="input-af51-remarks" rows="4" class="w-full resize-none rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="Notes for AF-51 receipts..."></textarea>
+                    </label>
+                  </div>
+
+                  <div class="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                    <h3 class="text-base font-semibold text-slate-900">COA Form 0016</h3>
+                    <label class="space-y-2 text-sm text-slate-700 block">
+                      Total Collections Logged
+                      <input data-sync-target="0016-collections" id="input-rcd-collections" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="0.00" />
+                    </label>
+                    <label class="space-y-2 text-sm text-slate-700 block">
+                      Remarks / Recommendations
+                      <textarea data-sync-target="0016-remarks" id="input-rcd-remarks" rows="4" class="w-full resize-none rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="COA 0016 remarks..."></textarea>
+                    </label>
+                  </div>
+
+                  <div class="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                    <h3 class="text-base font-semibold text-slate-900">Checks</h3>
+                    <label class="space-y-2 text-sm text-slate-700 block">
+                      Total Checks Reviewed
+                      <input data-sync-target="checks-summary-count" id="input-checks-summary-count" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="0" />
+                    </label>
+                    <label class="space-y-2 text-sm text-slate-700 block">
+                      Remarks / Recommendations
+                      <textarea data-sync-target="checks-summary-remarks" id="input-checks-summary-remarks" rows="4" class="w-full resize-none rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="Checks remarks..."></textarea>
+                    </label>
+                  </div>
+
+                  <div class="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                    <h3 class="text-base font-semibold text-slate-900">Disbursement Voucher (DV)</h3>
+                    <label class="space-y-2 text-sm text-slate-700 block">
+                      Total Count
+                      <input data-sync-target="dv-count" id="input-dv-count" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="0" />
+                    </label>
+                    <label class="space-y-2 text-sm text-slate-700 block">
+                      Remarks / Recommendations
+                      <textarea data-sync-target="dv-remarks" id="input-dv-remarks" rows="4" class="w-full resize-none rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="DV remarks..."></textarea>
+                    </label>
+                  </div>
+                </div>
+              </section>
+
+              <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p class="text-sm font-medium text-slate-700">Ready for printing</p>
+                  <p class="text-sm text-slate-500">Only the official RAAF document will appear on print/PDF.</p>
+                </div>
+                <button id="printBtn" class="inline-flex items-center justify-center rounded-3xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-slate-700">Print Official RAAF Document</button>
+              </div>
+            </div>
+
+            <!-- ORIGINAL PRINT PREVIEW SECTION -->
+            <div class="print-section" id="print-layout">
+              <div class="print-header">
+                <h3>REPORT OF ACCOUNTABILITY FOR ACCOUNTABLE FORMS</h3>
+                <p>For the Month of <span id="pr-month">_________</span>, 20<span id="pr-year">__</span></p>
+              </div>
+
+              <div class="print-meta">
+                <div>
+                  <div class="print-meta-row"><strong>Barangay:</strong> <span id="pr-barangay">_________________________</span></div>
+                  <div class="print-meta-row"><strong>Barangay Treasurer:</strong> <span id="pr-treasurer">_________________________</span></div>
+                </div>
+                <div>
+                  <div class="print-meta-row"><strong>City/Municipality:</strong> <span id="pr-city">_________________________</span></div>
+                  <div class="print-meta-row"><strong>Province:</strong> <span id="pr-province">_________________________</span></div>
+                  <div class="print-meta-row"><strong>RAAF No:</strong> <span id="pr-raaf">_________</span></div>
+                </div>
+              </div>
+
+              <table class="print-table">
+                <thead>
+                  <tr>
+                    <th rowspan="3">Name of Form</th>
+                    <th colspan="3">Beginning Balance</th>
+                    <th colspan="3">Ending Balance</th>
+                  </tr>
+                  <tr>
+                    <th rowspan="2">QTY</th>
+                    <th colspan="2">Inclusive Serial Nos</th>
+                    <th rowspan="2">QTY</th>
+                    <th colspan="2">Inclusive Serial Nos</th>
+                  </tr>
+                  <tr>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>From</th>
+                    <th>To</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="label">A. With Money Value</td>
+                    <td colspan="6"></td>
+                  </tr>
+                  <tr>
+                    <td class="sub-label"><span id="pr-a1-name"></span></td>
+                    <td id="pr-a1-bb-qty">0</td>
+                    <td id="pr-a1-bb-from"></td>
+                    <td id="pr-a1-bb-to"></td>
+                    <td id="pr-a1-eb-qty">0</td>
+                    <td id="pr-a1-eb-from"></td>
+                    <td id="pr-a1-eb-to"></td>
+                  </tr>
+                  <tr>
+                    <td class="sub-label"><span id="pr-a2-name"></span></td>
+                    <td id="pr-a2-bb-qty">0</td>
+                    <td id="pr-a2-bb-from"></td>
+                    <td id="pr-a2-bb-to"></td>
+                    <td id="pr-a2-eb-qty">0</td>
+                    <td id="pr-a2-eb-from"></td>
+                    <td id="pr-a2-eb-to"></td>
+                  </tr>
+                  <tr>
+                    <td class="sub-label"><span id="pr-a3-name"></span></td>
+                    <td id="pr-a3-bb-qty">0</td>
+                    <td id="pr-a3-bb-from"></td>
+                    <td id="pr-a3-bb-to"></td>
+                    <td id="pr-a3-eb-qty">0</td>
+                    <td id="pr-a3-eb-from"></td>
+                    <td id="pr-a3-eb-to"></td>
+                  </tr>
+                  <tr>
+                    <td class="sub-label"><span id="pr-a4-name"></span></td>
+                    <td id="pr-a4-bb-qty">0</td>
+                    <td id="pr-a4-bb-from"></td>
+                    <td id="pr-a4-bb-to"></td>
+                    <td id="pr-a4-eb-qty">0</td>
+                    <td id="pr-a4-eb-from"></td>
+                    <td id="pr-a4-eb-to"></td>
+                  </tr>
+                  <tr>
+                    <td class="sub-label"><span id="pr-a5-name"></span></td>
+                    <td id="pr-a5-bb-qty">0</td>
+                    <td id="pr-a5-bb-from"></td>
+                    <td id="pr-a5-bb-to"></td>
+                    <td id="pr-a5-eb-qty">0</td>
+                    <td id="pr-a5-eb-from"></td>
+                    <td id="pr-a5-eb-to"></td>
+                  </tr>
+                  <tr>
+                    <td class="sub-label"><span id="pr-a6-name"></span></td>
+                    <td id="pr-a6-bb-qty">0</td>
+                    <td id="pr-a6-bb-from"></td>
+                    <td id="pr-a6-bb-to"></td>
+                    <td id="pr-a6-eb-qty">0</td>
+                    <td id="pr-a6-eb-from"></td>
+                    <td id="pr-a6-eb-to"></td>
+                  </tr>
+
+                  <tr>
+                    <td class="label">B. Without Money Value</td>
+                    <td colspan="6"></td>
+                  </tr>
+                  <tr>
+                    <td class="sub-label"><span id="pr-b1-name"></span></td>
+                    <td id="pr-b1-bb-qty">0</td>
+                    <td id="pr-b1-bb-from"></td>
+                    <td id="pr-b1-bb-to"></td>
+                    <td id="pr-b1-eb-qty">0</td>
+                    <td id="pr-b1-eb-from"></td>
+                    <td id="pr-b1-eb-to"></td>
+                  </tr>
+                  <tr>
+                    <td class="sub-label"><span id="pr-b2-name"></span></td>
+                    <td id="pr-b2-bb-qty">0</td>
+                    <td id="pr-b2-bb-from"></td>
+                    <td id="pr-b2-bb-to"></td>
+                    <td id="pr-b2-eb-qty">0</td>
+                    <td id="pr-b2-eb-from"></td>
+                    <td id="pr-b2-eb-to"></td>
+                  </tr>
+                  <tr>
+                    <td class="sub-label"><span id="pr-b3-name"></span></td>
+                    <td id="pr-b3-bb-qty">0</td>
+                    <td id="pr-b3-bb-from"></td>
+                    <td id="pr-b3-bb-to"></td>
+                    <td id="pr-b3-eb-qty">0</td>
+                    <td id="pr-b3-eb-from"></td>
+                    <td id="pr-b3-eb-to"></td>
+                  </tr>
+                  <tr>
+                    <td class="sub-label"><span id="pr-b4-name"></span></td>
+                    <td id="pr-b4-bb-qty">0</td>
+                    <td id="pr-b4-bb-from"></td>
+                    <td id="pr-b4-bb-to"></td>
+                    <td id="pr-b4-eb-qty">0</td>
+                    <td id="pr-b4-eb-from"></td>
+                    <td id="pr-b4-eb-to"></td>
+                  </tr>
+                  <tr>
+                    <td class="sub-label"><span id="pr-b5-name"></span></td>
+                    <td id="pr-b5-bb-qty">0</td>
+                    <td id="pr-b5-bb-from"></td>
+                    <td id="pr-b5-bb-to"></td>
+                    <td id="pr-b5-eb-qty">0</td>
+                    <td id="pr-b5-eb-from"></td>
+                    <td id="pr-b5-eb-to"></td>
+                  </tr>
+                  <tr>
+                    <td class="sub-label"><span id="pr-b6-name"></span></td>
+                    <td id="pr-b6-bb-qty">0</td>
+                    <td id="pr-b6-bb-from"></td>
+                    <td id="pr-b6-bb-to"></td>
+                    <td id="pr-b6-eb-qty">0</td>
+                    <td id="pr-b6-eb-from"></td>
+                    <td id="pr-b6-eb-to"></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="print-cert">
+                <div class="print-cert-text">
+                  <strong>CERTIFICATION:</strong><br />
+                  I hereby certify that the foregoing is a true statement of all accountable forms received, issued and transferred by me during the above-stated period and the correctness of the beginning balances.
+                </div>
+                <div class="print-sig-row">
+                  <div>
+                    <div class="print-sig-line"><span id="pr-sig-treasurer" style="position: relative; top: -20px; font-size: 0.85rem;"></span></div>
+                    <div style="margin-top: 4px;">(Name and Signature)<br />Barangay Treasurer</div>
+                  </div>
+                  <div>
+                    <div class="print-sig-line"><span id="pr-sig-date" style="position: relative; top: -20px; font-size: 0.85rem;"></span></div>
+                    <div style="margin-top: 4px;">Date</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="margin-top: 40px; page-break-before: always;">
+                <p style="font-weight: 700; margin-bottom: 8px;">CONNECTED FORMS SUMMARY</p>
+                <table class="connected-summary-table">
+                  <thead>
+                    <tr>
+                      <th>Form</th>
+                      <th>Value</th>
+                      <th>Remarks / Recommendations</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Approved Budget</td>
+                      <td id="pr-approved-budget"></td>
+                      <td id="pr-approved-budget-remarks"></td>
+                    </tr>
+                    <tr>
+                      <td>Fidelity Bond</td>
+                      <td id="pr-bond-coverage"></td>
+                      <td id="pr-bond-remarks"></td>
+                    </tr>
+                    <tr>
+                      <td>Bank Book</td>
+                      <td id="pr-bank-book-balance"></td>
+                      <td id="pr-bank-book-remarks"></td>
+                    </tr>
+                    <tr>
+                      <td>Check Register Book</td>
+                      <td></td>
+                      <td id="pr-checks-remarks"></td>
+                    </tr>
+                    <tr>
+                      <td>AF-51</td>
+                      <td></td>
+                      <td id="pr-af51-remarks"></td>
+                    </tr>
+                    <tr>
+                      <td>0016 (Cedula)</td>
+                      <td id="pr-0016-collections"></td>
+                      <td id="pr-0016-remarks"></td>
+                    </tr>
+                    <tr>
+                      <td>Checks</td>
+                      <td id="pr-checks-summary-count"></td>
+                      <td id="pr-checks-summary-remarks"></td>
+                    </tr>
+                    <tr>
+                      <td>Disbursement Voucher (DV)</td>
+                      <td id="pr-dv-count"></td>
+                      <td id="pr-dv-remarks"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      function autoFillDefaults() {
+        const today = new Date();
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        
+        const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+        
+        setVal('inp-month', monthNames[today.getMonth()]);
+        setVal('inp-year', today.getFullYear().toString().slice(-2));
+        setVal('inp-city', 'Santa Rosa');
+        setVal('inp-province', 'Laguna');
+        
+        const activeBarangay = localStorage.getItem('sr_active_barangay');
+        if (activeBarangay) {
+          setVal('inp-barangay', activeBarangay);
+        }
+      }
+
+      const fieldMap = {
+        'inp-month': 'pr-month',
+        'inp-year': 'pr-year',
+        'inp-barangay': 'pr-barangay',
+        'inp-treasurer': 'pr-treasurer',
+        'inp-city': 'pr-city',
+        'inp-province': 'pr-province',
+        'inp-raaf': 'pr-raaf',
+      };
+
+      const dataFields = [
+        { inp: 'a1-bb-qty', out: 'pr-a1-bb-qty' }, { inp: 'a1-bb-from', out: 'pr-a1-bb-from' }, { inp: 'a1-bb-to', out: 'pr-a1-bb-to' },
+        { inp: 'a1-eb-qty', out: 'pr-a1-eb-qty' }, { inp: 'a1-eb-from', out: 'pr-a1-eb-from' }, { inp: 'a1-eb-to', out: 'pr-a1-eb-to' },
+
+        { inp: 'a2-bb-qty', out: 'pr-a2-bb-qty' }, { inp: 'a2-bb-from', out: 'pr-a2-bb-from' }, { inp: 'a2-bb-to', out: 'pr-a2-bb-to' },
+        { inp: 'a2-eb-qty', out: 'pr-a2-eb-qty' }, { inp: 'a2-eb-from', out: 'pr-a2-eb-from' }, { inp: 'a2-eb-to', out: 'pr-a2-eb-to' },
+
+        { inp: 'a3-bb-qty', out: 'pr-a3-bb-qty' }, { inp: 'a3-bb-from', out: 'pr-a3-bb-from' }, { inp: 'a3-bb-to', out: 'pr-a3-bb-to' },
+        { inp: 'a3-eb-qty', out: 'pr-a3-eb-qty' }, { inp: 'a3-eb-from', out: 'pr-a3-eb-from' }, { inp: 'a3-eb-to', out: 'pr-a3-eb-to' },
+
+        { inp: 'a4-bb-qty', out: 'pr-a4-bb-qty' }, { inp: 'a4-bb-from', out: 'pr-a4-bb-from' }, { inp: 'a4-bb-to', out: 'pr-a4-bb-to' },
+        { inp: 'a4-eb-qty', out: 'pr-a4-eb-qty' }, { inp: 'a4-eb-from', out: 'pr-a4-eb-from' }, { inp: 'a4-eb-to', out: 'pr-a4-eb-to' },
+
+        { inp: 'a5-bb-qty', out: 'pr-a5-bb-qty' }, { inp: 'a5-bb-from', out: 'pr-a5-bb-from' }, { inp: 'a5-bb-to', out: 'pr-a5-bb-to' },
+        { inp: 'a5-eb-qty', out: 'pr-a5-eb-qty' }, { inp: 'a5-eb-from', out: 'pr-a5-eb-from' }, { inp: 'a5-eb-to', out: 'pr-a5-eb-to' },
+
+        { inp: 'a6-bb-qty', out: 'pr-a6-bb-qty' }, { inp: 'a6-bb-from', out: 'pr-a6-bb-from' }, { inp: 'a6-bb-to', out: 'pr-a6-bb-to' },
+        { inp: 'a6-eb-qty', out: 'pr-a6-eb-qty' }, { inp: 'a6-eb-from', out: 'pr-a6-eb-from' }, { inp: 'a6-eb-to', out: 'pr-a6-eb-to' },
+
+        { inp: 'b1-bb-qty', out: 'pr-b1-bb-qty' }, { inp: 'b1-bb-from', out: 'pr-b1-bb-from' }, { inp: 'b1-bb-to', out: 'pr-b1-bb-to' },
+        { inp: 'b1-eb-qty', out: 'pr-b1-eb-qty' }, { inp: 'b1-eb-from', out: 'pr-b1-eb-from' }, { inp: 'b1-eb-to', out: 'pr-b1-eb-to' },
+
+        { inp: 'b2-bb-qty', out: 'pr-b2-bb-qty' }, { inp: 'b2-bb-from', out: 'pr-b2-bb-from' }, { inp: 'b2-bb-to', out: 'pr-b2-bb-to' },
+        { inp: 'b2-eb-qty', out: 'pr-b2-eb-qty' }, { inp: 'b2-eb-from', out: 'pr-b2-eb-from' }, { inp: 'b2-eb-to', out: 'pr-b2-eb-to' },
+
+        { inp: 'b3-bb-qty', out: 'pr-b3-bb-qty' }, { inp: 'b3-bb-from', out: 'pr-b3-bb-from' }, { inp: 'b3-bb-to', out: 'pr-b3-bb-to' },
+        { inp: 'b3-eb-qty', out: 'pr-b3-eb-qty' }, { inp: 'b3-eb-from', out: 'pr-b3-eb-from' }, { inp: 'b3-eb-to', out: 'pr-b3-eb-to' },
+
+        { inp: 'b4-bb-qty', out: 'pr-b4-bb-qty' }, { inp: 'b4-bb-from', out: 'pr-b4-bb-from' }, { inp: 'b4-bb-to', out: 'pr-b4-bb-to' },
+        { inp: 'b4-eb-qty', out: 'pr-b4-eb-qty' }, { inp: 'b4-eb-from', out: 'pr-b4-eb-from' }, { inp: 'b4-eb-to', out: 'pr-b4-eb-to' },
+
+        { inp: 'b5-bb-qty', out: 'pr-b5-bb-qty' }, { inp: 'b5-bb-from', out: 'pr-b5-bb-from' }, { inp: 'b5-bb-to', out: 'pr-b5-bb-to' },
+        { inp: 'b5-eb-qty', out: 'pr-b5-eb-qty' }, { inp: 'b5-eb-from', out: 'pr-b5-eb-from' }, { inp: 'b5-eb-to', out: 'pr-b5-eb-to' },
+
+        { inp: 'b6-bb-qty', out: 'pr-b6-bb-qty' }, { inp: 'b6-bb-from', out: 'pr-b6-bb-from' }, { inp: 'b6-bb-to', out: 'pr-b6-bb-to' },
+        { inp: 'b6-eb-qty', out: 'pr-b6-eb-qty' }, { inp: 'b6-eb-from', out: 'pr-b6-eb-from' }, { inp: 'b6-eb-to', out: 'pr-b6-eb-to' },
+      ];
+
+      function updatePrintLayout() {
+        Object.entries(fieldMap).forEach(([inpId, outId]) => {
+          const el = document.getElementById(inpId);
+          const val = el ? el.value : '';
+          document.getElementById(outId).textContent = val || '_________';
+        });
+
+        dataFields.forEach(({ inp, out }) => {
+          const el = document.getElementById(inp);
+          const val = el ? el.value : '';
+          document.getElementById(out).textContent = val || '';
+        });
+
+        // Static name labels for printed form
+        const staticNames = {
+          'pr-a1-name': 'Cash Tickets',
+          'pr-a2-name': '',
+          'pr-a3-name': '',
+          'pr-a4-name': '',
+          'pr-a5-name': '',
+          'pr-a6-name': '',
+          'pr-b1-name': 'Official Receipts',
+          'pr-b2-name': 'Checks',
+          'pr-b3-name': '',
+          'pr-b4-name': '',
+          'pr-b5-name': '',
+          'pr-b6-name': ''
+        };
+        Object.entries(staticNames).forEach(([id, txt]) => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = txt;
+        });
+
+        // Update signature section with treasurer name
+        const treasurerEl = document.getElementById('inp-treasurer');
+        const treasurerName = treasurerEl ? treasurerEl.value : '';
+        const prTreas = document.getElementById('pr-sig-treasurer');
+        if (prTreas) prTreas.textContent = treasurerName || '';
+
+        // Update date signature line
+        const today = new Date();
+        const dateStr = (today.getMonth() + 1).toString().padStart(2, '0') + '/' + today.getDate().toString().padStart(2, '0') + '/' + today.getFullYear();
+        const prDate = document.getElementById('pr-sig-date');
+        if (prDate) prDate.textContent = dateStr;
+      }
+
+      // 2. Connected Forms Sync logic
+      const syncFields = [
+        'approved-budget','approved-budget-remarks','bond-coverage','bond-expiry','bond-remarks','bank-book-balance','bank-book-remarks','dv-count','dv-remarks','0016-collections','0016-remarks','checks-summary-count','checks-summary-remarks','af51-remarks','checks-remarks'
+      ];
+
+      function syncConnectedInputs() {
+        syncFields.forEach((field) => {
+          const input = document.querySelector(`[data-sync-target='${field}']`);
+          const output = document.getElementById(`pr-${field}`);
+          if (output) {
+            output.textContent = input ? input.value : '';
+          }
+        });
+      }
+
+      // 3. Attach Listeners
+      Object.keys(fieldMap).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', updatePrintLayout);
+      });
+
+      dataFields.forEach(({ inp }) => {
+        const el = document.getElementById(inp);
+        if (el) el.addEventListener('input', updatePrintLayout);
+      });
+
+      document.querySelectorAll('[data-sync-target]').forEach((input) => {
+        input.addEventListener('input', syncConnectedInputs);
+      });
+
+      const treasurerEl = document.getElementById('inp-treasurer');
+      if (treasurerEl) treasurerEl.addEventListener('input', updatePrintLayout);
+
+      document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+      // 4. Initialize
+      autoFillDefaults();
+      updatePrintLayout();
+      syncConnectedInputs();
+
+      // ===== AF-51 SERIAL NUMBER AUTOMATION & CASCADING =====
+      function initAF51Automation() {
+        const sequence = [
+          { qtyId: 'b1-bb-qty', fromId: 'b1-bb-from', toId: 'b1-bb-to' },
+          { qtyId: 'b1-rc-qty', fromId: 'b1-rc-from', toId: 'b1-rc-to' },
+          { qtyId: 'b1-is-qty', fromId: 'b1-is-from', toId: 'b1-is-to' },
+          { qtyId: 'b1-eb-qty', fromId: 'b1-eb-from', toId: 'b1-eb-to' }
+        ].filter(step => document.getElementById(step.qtyId) !== null);
+
+        function padSerial(num, length) {
+          return String(num).padStart(length || 4, '0');
+        }
+
+        function calculateAndCascade() {
+          let lastActiveToSerial = null;
+          let paddingLength = 4;
+
+          sequence.forEach((step, index) => {
+            const qtyEl = document.getElementById(step.qtyId);
+            const fromEl = document.getElementById(step.fromId);
+            const toEl = document.getElementById(step.toId);
+
+            if (!qtyEl || !fromEl || !toEl) return;
+
+            const qty = parseInt(qtyEl.value, 10) || 0;
+
+            if (index > 0 && lastActiveToSerial !== null) {
+              const nextFromVal = lastActiveToSerial + 1;
+              fromEl.value = padSerial(nextFromVal, paddingLength);
+              fromEl.dispatchEvent(new Event('input'));
+            }
+
+            const fromValStr = fromEl.value.trim();
+            if (fromValStr && qty > 0) {
+              paddingLength = fromValStr.length;
+              const fromValNum = parseInt(fromValStr, 10);
+              if (!isNaN(fromValNum)) {
+                const toValNum = fromValNum + qty - 1;
+                toEl.value = padSerial(toValNum, paddingLength);
+                lastActiveToSerial = toValNum;
+                toEl.dispatchEvent(new Event('input'));
+              }
+            } else {
+              toEl.value = '';
+              toEl.dispatchEvent(new Event('input'));
+              if (fromValStr && !isNaN(parseInt(fromValStr, 10))) {
+                lastActiveToSerial = parseInt(fromValStr, 10) - 1;
+              }
+            }
+          });
+        }
+
+        sequence.forEach((step, index) => {
+          const qtyEl = document.getElementById(step.qtyId);
+          const fromEl = document.getElementById(step.fromId);
+
+          if (qtyEl) {
+            qtyEl.addEventListener('input', calculateAndCascade);
+          }
+          if (fromEl && index === 0) {
+            fromEl.addEventListener('input', calculateAndCascade);
+          }
+        });
+      }
+      initAF51Automation();
+
+      // ===== CHECKS SERIAL NUMBER AUTOMATION & CASCADING =====
+      function initChecksAutomation() {
+        const sequence = [
+          { qtyId: 'b2-bb-qty', fromId: 'b2-bb-from', toId: 'b2-bb-to' },
+          { qtyId: 'b2-rc-qty', fromId: 'b2-rc-from', toId: 'b2-rc-to' },
+          { qtyId: 'b2-is-qty', fromId: 'b2-is-from', toId: 'b2-is-to' },
+          { qtyId: 'b2-eb-qty', fromId: 'b2-eb-from', toId: 'b2-eb-to' }
+        ].filter(step => document.getElementById(step.qtyId) !== null);
+
+        let isCalculating = false;
+
+        function padSerial(num, length) {
+          if (isNaN(num) || num === null || num === undefined) return '';
+          return String(num).padStart(length || 4, '0');
+        }
+
+        function calculateAndCascade() {
+          if (isCalculating) return;
+          isCalculating = true;
+
+          try {
+            let lastActiveToSerial = null;
+            let paddingLength = 4;
+
+            sequence.forEach((step, index) => {
+              const qtyEl = document.getElementById(step.qtyId);
+              const fromEl = document.getElementById(step.fromId);
+              const toEl = document.getElementById(step.toId);
+
+              if (!qtyEl || !fromEl || !toEl) return;
+
+              if (index > 0 && lastActiveToSerial !== null && !isNaN(lastActiveToSerial)) {
+                const nextFromVal = lastActiveToSerial + 1;
+                fromEl.value = padSerial(nextFromVal, paddingLength);
+                fromEl.dispatchEvent(new Event('input'));
+              }
+
+              const qty = parseInt(qtyEl.value, 10) || 0;
+              const fromValStr = fromEl.value.trim();
+
+              if (fromValStr && qty > 0) {
+                paddingLength = fromValStr.length;
+                const fromValNum = parseInt(fromValStr, 10);
+                if (!isNaN(fromValNum)) {
+                  const toValNum = fromValNum + qty - 1;
+                  toEl.value = padSerial(toValNum, paddingLength);
+                  lastActiveToSerial = toValNum;
+                  toEl.dispatchEvent(new Event('input'));
+                }
+              } else {
+                toEl.value = '';
+                toEl.dispatchEvent(new Event('input'));
+                if (fromValStr && !isNaN(parseInt(fromValStr, 10))) {
+                  lastActiveToSerial = parseInt(fromValStr, 10) - 1;
+                }
+              }
+            });
+          } finally {
+            isCalculating = false;
+          }
+        }
+
+        sequence.forEach((step) => {
+          const qtyEl = document.getElementById(step.qtyId);
+          const fromEl = document.getElementById(step.fromId);
+
+          if (qtyEl) qtyEl.addEventListener('input', calculateAndCascade);
+          if (fromEl) fromEl.addEventListener('input', calculateAndCascade);
+        });
+      }
+      initChecksAutomation();
+    </script>
+  </body>
+</html>

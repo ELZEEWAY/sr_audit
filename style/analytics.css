@@ -1,0 +1,110 @@
+@import './theme.css';
+
+/* Analytics Panel Styling - DILG Theme */
+
+.analytics-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 28px;
+  box-shadow: var(--shadow-card);
+  animation: slideIn 0.5s ease-out;
+}
+
+.analytics-content {
+  display: grid;
+  gap: 28px;
+  margin-top: 24px;
+}
+
+#analyticsChart {
+  animation: slideIn 0.6s ease-out;
+  max-width: 100%;
+  height: auto;
+}
+
+.analytics-table {
+  width: 100%;
+  border-collapse: collapse;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.analytics-table tr:first-child {
+  background: linear-gradient(135deg, var(--dilg-red-dark), var(--dilg-red));
+  color: #fff;
+}
+
+.analytics-table th {
+  padding: 16px 12px;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: background var(--transition-base);
+}
+
+.analytics-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text);
+  font-size: 0.95rem;
+  transition: background var(--transition-base), color var(--transition-base);
+}
+
+.analytics-table tbody tr {
+  animation: slideIn 0.4s ease-out;
+}
+
+.analytics-table tbody tr:nth-child(odd) {
+  background: rgba(196, 30, 58, 0.03);
+}
+
+.analytics-table tbody tr:hover {
+  background: rgba(196, 30, 58, 0.08);
+  transform: translateX(4px);
+  transition: background var(--transition-base), transform var(--transition-base);
+}
+
+.analytics-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Staggered animation for table rows */
+.analytics-table tbody tr:nth-child(1) {
+  animation: slideIn 0.4s ease-out 0.1s both;
+}
+
+.analytics-table tbody tr:nth-child(2) {
+  animation: slideIn 0.4s ease-out 0.2s both;
+}
+
+.analytics-table tbody tr:nth-child(3) {
+  animation: slideIn 0.4s ease-out 0.3s both;
+}
+
+.analytics-table tbody tr:nth-child(n+4) {
+  animation: slideIn 0.4s ease-out 0.4s both;
+}
+
+/* Responsive layout */
+@media (max-width: 1024px) {
+  .analytics-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .analytics-panel {
+    padding: 20px;
+  }
+
+  .analytics-table {
+    font-size: 0.85rem;
+  }
+
+  .analytics-table th,
+  .analytics-table td {
+    padding: 12px 8px;
+  }
+}

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="/Assets/Logo/dilg-icon.ico">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="../style/analytics.css" />
+  <title>SR-AUDIT SYSTEM Dashboard</title>
+  <link rel="stylesheet" href="../style/indeex.css" />
+  <script src="../javascript/auth.js"></script>
+</head>
+
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="../Assets/Logo/dilg-logo.png" alt="Logo" class="brand-logo" />
+        <span>SR-AUDIT SYSTEM</span>
+      </div>
+      <nav class="sidebar-nav" aria-label="Main navigation">
+        <a href="indeex.html" class="nav-link active"><i class="fa-solid fa-chart-line" style="margin-right: 8px;"></i>
+          Dashboard</a>
+        <a href="inventory.html" class="nav-link"><i class="fa-solid fa-boxes-stacked" style="margin-right: 8px;"></i>
+          Inventory</a>
+        <a href="financial.html" class="nav-link"><i class="fa-solid fa-wallet" style="margin-right: 8px;"></i>
+          Financial</a>
+        <a href="raaf.html" class="nav-link"><i class="fa-solid fa-receipt" style="margin-right: 8px;"></i> RAAF
+          Form</a>
+        <a href="documents.html" class="nav-link"><i class="fa-solid fa-file-invoice" style="margin-right: 8px;"></i>
+          Documents</a>
+        <a href="#" onclick="handleLogout()" class="nav-link"
+          style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.15); border-radius: 0; padding-top: 20px;"><i
+            class="fa-solid fa-right-from-bracket" style="margin-right: 8px;"></i> Logout</a>
+      </nav>
+    </aside>
+
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="topbar-left">
+          <img src="../Assets/Logo/dilg-icon.ico" alt="Icon" class="topbar-icon" />
+          <div>
+            <p class="eyebrow">Barangay Audit & Transition System</p>
+            <h1>SR-AUDIT SYSTEM (City of Santa Rosa)</h1>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <label for="barangay-select">Active Barangay</label>
+          <select id="barangay-select" class="barangay-select"></select>
+        </div>
+      </header>
+
+      <main class="content">
+        <section class="dashboard-grid">
+          <article class="metric-card card-blue">
+            <span class="metric-label">Available Balance</span>
+            <strong id="balance-value">₱0.00</strong>
+          </article>
+          <article class="metric-card card-slate">
+            <span class="metric-label">Total Asset Count</span>
+            <strong id="asset-count">0</strong>
+          </article>
+          <article class="metric-card card-gold">
+            <span class="metric-label">Archived Documents</span>
+            <strong id="document-count">0</strong>
+          </article>
+        </section>
+
+        <section class="tracker-panel">
+          <header class="panel-header">
+            <h2>DILG Compliance Tracker</h2>
+            <p>Live barangay compliance overview for all active categories.</p>
+          </header>
+          <div class="progress-list">
+            <div class="progress-item">
+              <div class="progress-title">
+                <span>Full Disclosure Policy (FDP)</span>
+                <strong id="progress-fdp">0%</strong>
+              </div>
+              <div class="progress-bar"><span id="bar-fdp"></span></div>
+            </div>
+            <div class="progress-item">
+              <div class="progress-title">
+                <span>SK Financial Audit</span>
+                <strong id="progress-sk">0%</strong>
+              </div>
+              <div class="progress-bar"><span id="bar-sk"></span></div>
+            </div>
+            <div class="progress-item">
+              <div class="progress-title">
+                <span>Lupon Logs</span>
+                <strong id="progress-lupon">0%</strong>
+              </div>
+              <div class="progress-bar"><span id="bar-lupon"></span></div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="../lib/sql-wasm.js"></script>
+  <script src="../javascript/sqlite-db.js"></script>
+  <script src="../javascript/analytics.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="../javascript/dashboard.js"></script>
+  <script src="../javascript/indeex.js"></script>
+</body>
+
+</html>

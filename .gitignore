@@ -1,0 +1,20 @@
+# Node dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+
+# Build outputs and temporary directories
+dist/
+build-dist/
+build-dist-2/
+build-dist-3/
+build-dist-out/
+scratch/
+
+# OS files
+.DS_Store
+Thumbs.db

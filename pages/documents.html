@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="/Assets/Logo/dilg-icon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <title>SR-AUDIT SYSTEM Documents</title>
+    <link rel="stylesheet" href="../style/documents.css" />
+    <link rel="stylesheet" href="../style/documents-tracker.css" />
+    <script src="../javascript/auth-guard.js"></script>
+    <script src="../javascript/auth.js"></script>
+  </head>
+
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <img src="../Assets/Logo/dilg-logo.png" alt="Logo" class="brand-logo" />
+          <span>SR-AUDIT SYSTEM</span>
+        </div>
+        <nav class="sidebar-nav" aria-label="Main navigation">
+          <!-- <a href="indeex.html" class="nav-link"><i class="fa-solid fa-chart-line" style="margin-right: 8px;"></i> Dashboard</a> -->
+          <a href="inventory.html" class="nav-link"><i class="fa-solid fa-boxes-stacked" style="margin-right: 8px;"></i> Inventory</a>
+          <a href="financial.html" class="nav-link"><i class="fa-solid fa-wallet" style="margin-right: 8px;"></i> Financial</a>
+          <!-- <a href="raaf.html" class="nav-link"><i class="fa-solid fa-receipt" style="margin-right: 8px;"></i> RAAF Form</a> -->
+          <a href="documents.html" class="nav-link active"><i class="fa-solid fa-file-invoice" style="margin-right: 8px;"></i> Documents</a>
+        </nav>
+
+        <a
+          href="#"
+          onclick="handleLogout()"
+          class="nav-link"
+          style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.15); border-radius: 0; padding-top: 20px;"
+        >
+          <i class="fa-solid fa-right-from-bracket" style="margin-right: 8px;"></i> Logout
+        </a>
+      </aside>
+
+      <div class="page-shell">
+        <header class="topbar">
+          <div class="topbar-left">
+            <img src="../Assets/Logo/dilg-icon.ico" alt="Icon" class="topbar-icon" />
+            <div>
+              <p class="eyebrow">Barangay Audit & Transition System</p>
+              <h1>SR-AUDIT SYSTEM (City of Santa Rosa)</h1>
+            </div>
+          </div>
+          <div class="topbar-right">
+            <label for="barangay-select">Active Barangay</label>
+            <select id="barangay-select" class="barangay-select"></select>
+          </div>
+        </header>
+
+        <main class="content" style="display:block;">
+          <div class="tracker-app">
+
+            <div class="tracker-topbar">
+              <div class="tracker-title">
+                <h2>Barangay Document Audit & Compliance Tracker</h2>
+                <p>Track, check, and log mandatory administrative and legislative documents.</p>
+              </div>
+
+              <div class="tracker-progress" aria-label="Overall progress">
+                <div class="tracker-progress__percent" data-tracker="overall-percent">0% Compliant</div>
+                <div class="tracker-bar" aria-hidden="true"><div style="width:0%"></div></div>
+
+                <div class="tracker-metrics" role="list">
+                  <div class="tracker-card" role="listitem"><div class="label">Total Required</div><div class="value" data-tracker="metric-total">0</div></div>
+                  <div class="tracker-card" role="listitem"><div class="label">Compliant (Available)</div><div class="value" data-tracker="metric-compliant">0 (Available)</div></div>
+                  <div class="tracker-card" role="listitem"><div class="label">Missing/Pending</div><div class="value" data-tracker="metric-missing">0 (Pending)</div></div>
+                  <div class="tracker-card" role="listitem"><div class="label">Not Applicable</div><div class="value" data-tracker="metric-na">0</div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Interactive Category Tabs -->
+            <div class="tracker-tabs-bar" role="tablist" aria-label="Document categories">
+              <button type="button" class="tracker-tab active" data-tab="legislative" role="tab" aria-selected="true">
+                <i class="fa-solid fa-gavel"></i> Legislative & Ordinances
+              </button>
+              <button type="button" class="tracker-tab" data-tab="agreements" role="tab" aria-selected="false">
+                <i class="fa-solid fa-file-contract"></i> Agreements & Journals
+              </button>
+              <button type="button" class="tracker-tab" data-tab="masterlists" role="tab" aria-selected="false">
+                <i class="fa-solid fa-address-book"></i> Masterlists & Registries
+              </button>
+              <button type="button" class="tracker-tab" data-tab="special" role="tab" aria-selected="false">
+                <i class="fa-solid fa-folder-open"></i> Special Programs
+              </button>
+            </div>
+
+            <div class="tracker-controls" aria-label="Search and filters">
+              <div class="tracker-search">
+                <input id="tracker-search" class="tracker-input" type="search" placeholder="Search documents..." />
+              </div>
+              <div style="display:none" data-tracker="active-filter" data-active-filter="all"></div>
+
+
+            <div class="tracker-filters" role="group" aria-label="Quick filters">
+                <button type="button" class="tracker-fbtn active" data-filter-btn="all">All Items</button>
+                <button type="button" class="tracker-fbtn" data-filter-btn="missing">Only Missing Items</button>
+                <button type="button" class="tracker-fbtn" data-filter-btn="compliant">Only Compliant Items</button>
+              </div>
+
+              <div class="tracker-actions">
+                <button type="button" id="tracker-export" class="tracker-btn">Export Report</button>
+                <button type="button" id="tracker-reset" class="tracker-btn tracker-btn--danger">Reset Tracker</button>
+              </div>
+            </div>
+
+            <div id="tracker-items" class="tracker-items" aria-label="Document categories and items"></div>
+          </div>
+        </main>
+
+      </div>
+    </div>
+
+    <div id="document-viewer-overlay" class="image-viewer-overlay" role="dialog" aria-modal="true" aria-label="Scanned document preview">
+      <div class="image-viewer-container">
+        <button type="button" id="document-viewer-close" class="image-viewer-close" aria-label="Close preview">&times;</button>
+        <img id="document-viewer-image" class="image-viewer-image" src="" alt="Scanned document" />
+      </div>
+    </div>
+
+    <!-- Compliance Edit Drawer Overlay -->
+    <div id="drawer-overlay" class="drawer-overlay no-print" role="dialog" aria-modal="true" aria-label="Edit document details">
+      <div class="drawer-content">
+        <div class="drawer-header">
+          <h3>Edit Document Details</h3>
+          <button type="button" id="drawer-close" class="drawer-close" aria-label="Close drawer">&times;</button>
+        </div>
+        <div class="drawer-body">
+          <div class="drawer-meta-section">
+            <h4 id="drawer-title" class="drawer-doc-title">Document Title</h4>
+            <span id="drawer-category" class="drawer-doc-category">Category Subtitle</span>
+          </div>
+
+          <div class="drawer-field">
+            <label for="drawer-status">Compliance Status</label>
+            <select id="drawer-status" class="drawer-select">
+              <option value="available">Available (Compliant)</option>
+              <option value="pending">Pending/Missing</option>
+              <option value="na">Not Applicable</option>
+            </select>
+          </div>
+
+          <div class="drawer-field">
+            <label for="drawer-date">Compliance Log Date</label>
+            <input type="date" id="drawer-date" class="drawer-input" />
+          </div>
+
+          <div class="drawer-field">
+            <label for="drawer-notes">Remarks / Notes</label>
+            <textarea id="drawer-notes" class="drawer-textarea" rows="6" placeholder="Enter compliance notes, reference numbers, or remarks..."></textarea>
+          </div>
+
+          <div class="drawer-actions-panel">
+            <button type="button" id="drawer-save" class="drawer-btn-save">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../lib/sql-wasm.js"></script>
+    <script src="../javascript/sqlite-db.js"></script>
+    <script src="../javascript/analytics.js"></script>
+    <script type="module" src="../javascript/documents-tracker.js"></script>
+  </body>
+</html>
+
+

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="../Assets/Logo/dilg-icon.ico">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <title>Welcome to DILG Audit System - Login</title>
+  <link rel="stylesheet" href="../style/login.css" />
+  <!-- Run auth check script immediately to prevent page flash -->
+  <script src="../javascript/auth-guard.js"></script>
+  <script src="../javascript/auth.js"></script>
+</head>
+
+<body class="login-body">
+  <div class="login-container">
+    <div class="login-card">
+      <header class="login-header">
+        <img src="../Assets/Logo/dilg-logo.png" alt="DILG Logo" class="login-logo" />
+        <h1>Welcome to DILG Audit System</h1>
+        <p>Sign in to access your dashboard</p>
+      </header>
+
+      <div id="login-error" class="alert alert-danger" role="alert">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span id="error-message">Invalid username or password.</span>
+      </div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label for="username" class="form-label">Username</label>
+          <div class="input-container">
+            <i class="fa-solid fa-user input-icon"></i>
+            <input type="text" id="username" class="form-control" placeholder="Enter Username" required
+              autocomplete="username" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <div class="input-container">
+            <i class="fa-solid fa-lock input-icon"></i>
+            <input type="password" id="password" class="form-control" placeholder="Enter Password" required
+              autocomplete="current-password" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="login-barangay" class="form-label">Barangay</label>
+          <div class="input-container">
+            <i class="fa-solid fa-map-marker-alt input-icon"></i>
+            <select id="login-barangay" class="form-control" required>
+              <option value="Aplaya">Aplaya</option>
+              <option value="Balibago">Balibago</option>
+              <option value="Caingin">Caingin</option>
+              <option value="Dila">Dila</option>
+              <option value="Dita">Dita</option>
+              <option value="Don Jose">Don Jose</option>
+              <option value="Ibaba">Ibaba</option>
+              <option value="Kanluran">Kanluran</option>
+              <option value="Labas">Labas</option>
+              <option value="Macabling">Macabling</option>
+              <option value="Malitlit">Malitlit</option>
+              <option value="Malusak">Malusak</option>
+              <option value="Market Area">Market Area</option>
+              <option value="Pooc (Pook)">Pooc (Pook)</option>
+              <option value="Pulong Santa Cruz">Pulong Santa Cruz</option>
+              <option value="Santo Domingo">Santo Domingo</option>
+              <option value="Sinalhan">Sinalhan</option>
+              <option value="Tagapo">Tagapo</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-login">
+          Sign In <i class="fa-solid fa-right-to-bracket" style="margin-left: 8px;"></i>
+        </button>
+      </form>
+
+      <footer class="login-footer">
+        <p>&copy; 2026 SR-AUDIT SYSTEM. All Rights Reserved.</p>
+        <p>Barangay Audit & Transition System (City of Santa Rosa)</p>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    // Keep Barangay dropdown visible for all users to select their active tracking context
+    const barangayGroup = document.getElementById('login-barangay').closest('.form-group');
+    barangayGroup.style.display = '';
+
+    document.getElementById('login-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const usernameInput = document.getElementById('username').value.trim();
+      const passwordInput = document.getElementById('password').value;
+      const selectedBarangay = document.getElementById('login-barangay').value;
+      const errorAlert = document.getElementById('login-error');
+      const errorMessage = document.getElementById('error-message');
+
+      // Use central secure handleLogin API endpoint
+      const result = await handleLogin(usernameInput, passwordInput);
+
+      if (result.success) {
+        const loggedInUser = JSON.parse(sessionStorage.getItem('currentUser'));
+        const role = loggedInUser.role === 'admin' ? 'superadmin' : loggedInUser.authorized_module;
+
+        sessionStorage.setItem('userRole', role);
+
+        // All users set their active Barangay context from the selected dropdown value
+        localStorage.setItem('sr_active_barangay', selectedBarangay);
+        localStorage.removeItem('sr_active_office');
+
+        const moduleRedirects = {
+          'inventory': 'inventory.html',
+          'financial': 'financial.html',
+          'documents': 'documents.html',
+          'all': 'inventory.html'
+        };
+        const targetPage = moduleRedirects[loggedInUser.authorized_module] || 'inventory.html';
+        window.location.href = targetPage;
+      } else {
+        errorMessage.textContent = result.message;
+        errorAlert.style.display = 'block';
+
+        document.getElementById('password').value = '';
+        document.getElementById('password').focus();
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,41 @@
+{
+  "name": "sr-audit-system",
+  "version": "1.0.0",
+  "description": "STANDALONE ELECTRON DESKTOP SHELL FOR DILG SANTA ROSA BARANGAY AUDIT SYSTEM",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.1",
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "electron": "^28.2.0",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.dilg.srauditsystem",
+    "productName": "SRAuditSystem",
+    "win": {
+      "target": [
+        "portable"
+      ]
+    },
+    "directories": {
+      "output": "../build-dist-out"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "package.json",
+      "pages/**/*",
+      "javascript/**/*",
+      "style/**/*",
+      "Assets/**/*",
+      "lib/**/*",
+      ".env"
+    ]
+  }
+}

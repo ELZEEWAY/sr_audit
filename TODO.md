@@ -1,0 +1,11 @@
+- [x] Replace documents page content with Barangay Document Audit & Compliance Tracker UI
+- [x] Add required document dataset (exact categories/items as specified)
+- [x] Add required categories dataset (legislative/bfdp/plans/other)
+- [x] Add search + filters (All, Only Missing, Only Compliant)
+- [x] Add overall progress dashboard + per-category mini progress
+- [x] Persist tracker state in localStorage (scoped by barangay)
+- [x] Implement Reset Tracker with confirmation popup
+- [x] Implement Export Report (printable HTML and JSON/text download)
+- [ ] Update CSS to match existing app style
+- [x] Update/replace javascript/documents.js to drive the tracker
+- [ ] Manual test: load page, change statuses, refresh persistence, export, reset

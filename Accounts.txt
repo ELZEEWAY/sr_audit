@@ -1,0 +1,15 @@
+Superadmin Account:
+Username: dilgadmin
+Password: dilgadmin_2026
+
+Inventory Access Account:
+Username: dilginventory
+Password: dilginventory_2026
+
+Financial Access Account:
+Username: dilfinancial
+Password: dilfinancial_2026
+
+Documents Access Account:
+Username: dilgdocument
+Password: dilgdocument_2026

@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="/Assets/Logo/dilg-icon.ico">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <title>SR-AUDIT SYSTEM | Inventory Module</title>
+  <link rel="stylesheet" href="../style/inventory.css" />
+  <script src="../javascript/auth-guard.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-unchanged {
+      background-color: #dcfce7;
+      color: #166534;
+    }
+
+    .badge-modified {
+      background-color: #e0f2fe;
+      color: #0c4a6e;
+    }
+
+    .badge-new {
+      background-color: #dbeafe;
+      color: #1e40af;
+    }
+
+    .badge-missing {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+  </style>
+  <script src="../javascript/auth.js"></script>
+</head>
+
+<body>
+  <div class="app-shell">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="../Assets/Logo/dilg-logo.png" alt="Logo" class="brand-logo" />
+        <span>SR-AUDIT</span>
+      </div>
+      <nav class="sidebar-nav" aria-label="Main navigation">
+        <!-- <a href="indeex.html" class="nav-link"><i class="fa-solid fa-chart-line" style="margin-right: 8px;"></i> Dashboard</a> -->
+        <a href="inventory.html" class="nav-link active"><i class="fa-solid fa-boxes-stacked"
+            style="margin-right: 8px;"></i> Inventory</a>
+        <a href="financial.html" class="nav-link"><i class="fa-solid fa-wallet" style="margin-right: 8px;"></i>
+          Financial</a>
+        <!-- <a href="raaf.html" class="nav-link"><i class="fa-solid fa-receipt" style="margin-right: 8px;"></i> RAAF Form</a> -->
+        <a href="documents.html" class="nav-link"><i class="fa-solid fa-file-invoice" style="margin-right: 8px;"></i>
+          Documents</a>
+        <a href="#" onclick="handleLogout()" class="nav-link"
+          style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.15); border-radius: 0; padding-top: 20px;"><i
+            class="fa-solid fa-right-from-bracket" style="margin-right: 8px;"></i> Logout</a>
+      </nav>
+    </aside>
+
+    <!-- Main Page Shell -->
+    <div class="page-shell">
+      <!-- Top Navigation Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <img src="../Assets/Logo/dilg-icon.ico" alt="Icon" class="topbar-icon" />
+          <div class="topbar-text">
+            <p class="topbar-eyebrow">Barangay Audit & Transition System</p>
+            <h1 class="topbar-title">SR-AUDIT SYSTEM (City of Santa Rosa)</h1>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <label for="barangay-select" class="barangay-label">Active Barangay</label>
+          <select id="barangay-select" class="barangay-select"></select>
+        </div>
+      </header>
+
+      <!-- Main Content Area -->
+      <main class="content">
+        <section class="inventory-section">
+          <!-- Office Selection Screen (Initially Visible) -->
+          <div id="office-selection-screen" class="office-selection-screen active">
+            <div class="selection-header">
+              <h2>Pumili ng Opisina na I-o-audit</h2>
+              <p>Piliin ang isa sa mga opisina sa ibaba upang magsimula ng inventory audit</p>
+            </div>
+
+            <div class="offices-grid" id="officesGrid">
+              <!-- Office cards will be generated here by JavaScript -->
+            </div>
+          </div>
+
+          <!-- Sub-Office Selection Screen (Hidden Initially) -->
+          <div id="sub-office-selection-screen" class="office-selection-screen">
+            <div class="selection-header relative pb-4">
+              <button class="btn-back-offices mb-4" id="btn-back-categories" aria-label="Back to categories">
+                <i class="fas fa-arrow-left"></i> Bumalik
+              </button>
+              <h2>Pumili ng Tiyak na Silid o Opisina</h2>
+              <p>Piliin ang tiyak na silid o opisina sa ilalim ng <span id="selected-category-title"
+                  class="font-bold text-red-600">—</span> upang magsimula ng audit</p>
+            </div>
+
+            <div class="offices-grid mt-6" id="subOfficesGrid">
+              <!-- Sub-office cards will be generated here by JavaScript -->
+            </div>
+
+            <div class="flex justify-center mt-8">
+              <button id="btn-start-sub-audit" class="btn-start-audit opacity-50 cursor-not-allowed" disabled>
+                <i class="fas fa-play" style="margin-right: 8px;"></i> Magsimula ng Audit
+              </button>
+            </div>
+          </div>
+
+
+          <!-- Audit Workspace (Hidden Initially) -->
+          <div id="audit-workspace" class="audit-workspace">
+            <!-- Audit Header with Back Button -->
+            <div class="audit-header">
+              <div class="audit-title-section">
+                <h2 class="audit-title">Property & Asset Inventory</h2>
+                <p class="audit-subtitle">
+                  <span id="audit-barangay-display">—</span> > <span id="audit-office-display">—</span>
+                </p>
+              </div>
+              <button class="btn-back-offices" id="btn-back-offices" aria-label="Back to offices">
+                <i class="fas fa-arrow-left"></i> Bumalik sa mga Opisina
+              </button>
+            </div>
+
+            <!-- Page Header -->
+            <div class="section-header">
+              <div>
+                <h3>Inventory Module</h3>
+                <p>Manage assets and equipment for <span id="active-barangay-label">—</span></p>
+              </div>
+              <div class="controls-row" style="display: flex; gap: 1rem; align-items: center; justify-content: flex-end; width: 100%;">
+                <!-- Component 1: Search Bar / Filter Dropdown block -->
+                <div class="search-filter-block" style="display: flex; gap: 0.5rem; align-items: center; flex: 1;">
+                  <div class="search-wrapper" style="flex: 1; max-width: 400px; position: relative; margin: 0;">
+                    <input type="text" id="searchInput" class="search-input"
+                      placeholder="Search by Item Name, Description, or Category..."
+                      aria-label="Search inventory items" />
+                    <span class="search-icon" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%);"><i class="fas fa-search" aria-hidden="true"></i></span>
+                  </div>
+                  <div class="filter-wrapper" style="margin: 0;">
+                    <select id="categoryFilter" class="form-select filter-select">
+                      <option value="">All Categories</option>
+                      <option value="Office Equipment">Office Equipment</option>
+                      <option value="IT Equipment">IT Equipment</option>
+                      <option value="Furniture & Fixtures">Furniture & Fixtures</option>
+                      <option value="Communication Equipment">Communication Equipment</option>
+                      <option value="Rescue Equipment">Rescue Equipment</option>
+                      <option value="Motor Vehicle">Motor Vehicle</option>
+                      <option value="Other Property">Other Property</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Component 2: "+ Add Item" button (or "← Add Item" back button) -->
+                <div class="add-item-block" style="margin: 0;">
+                  <button class="btn-add inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors cursor-pointer" id="btn-add-item" style="height: 44px;">
+                    <span class="icon">+</span> Add Item
+                  </button>
+                  <button class="btn-back-to-inventory hidden inline-flex items-center gap-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2 px-4 rounded-lg transition-colors cursor-pointer" id="btn-back-to-inventory" style="height: 44px;">
+                    <i class="fas fa-arrow-left"></i> Back to Inventory
+                  </button>
+                </div>
+
+                <!-- Component 3: "Compare Audits" / "Compare Audits View" toggle button -->
+                <div class="compare-audit-block" style="margin: 0;">
+                  <button id="btn-compare-audit" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2 px-4 rounded-lg inline-flex items-center transition-colors cursor-pointer" style="height: 44px;">
+                    <i class="fas fa-exchange-alt" style="margin-right: 8px;"></i> Compare Audits
+                  </button>
+                  <button id="btn-compare-audit-view" class="hidden bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg inline-flex items-center transition-colors shadow-md cursor-pointer" style="height: 44px;">
+                    <i class="fas fa-exchange-alt" style="margin-right: 8px;"></i> Compare Audits View
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Table -->
+            <div class="table-wrapper">
+              <table class="inventory-table" id="inventoryTable">
+                <thead>
+                  <tr>
+                    <th class="col-item">Item</th>
+                    <th class="col-category">Category</th>
+                    <th class="col-description">Description</th>
+                    <th class="col-ics">ICS Number</th>
+                    <th class="col-quantity">Quantity</th>
+                    <th class="col-image">Image</th>
+                    <th class="col-location">Found in</th>
+                    <th class="col-remarks">Remarks</th>
+                    <th class="col-actions">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="inventoryBody">
+                  <tr class="empty-row">
+                    <td colspan="9" class="empty-message">No items recorded. Click "Add Item" to begin.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal Overlay for Add/Edit Item -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Add New Item</h3>
+        <button class="modal-close" id="modal-close" aria-label="Close modal">×</button>
+      </div>
+      <form id="itemForm" class="item-form">
+        <div class="form-group">
+          <label for="itemName">Item Name *</label>
+          <input type="text" id="itemName" class="form-input" placeholder="e.g., Office Chair" required />
+        </div>
+
+        <div class="form-group">
+          <label for="itemDescription">Description *</label>
+          <textarea id="itemDescription" class="form-textarea" placeholder="Enter detailed description..."
+            required></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="itemCategory">Category *</label>
+            <select id="itemCategory" class="form-select" required>
+              <option value="">Select a category</option>
+              <option value="Office Equipment">Office Equipment</option>
+              <option value="IT Equipment">IT Equipment</option>
+              <option value="Furniture & Fixtures">Furniture & Fixtures</option>
+              <option value="Communication Equipment">Communication Equipment</option>
+              <option value="Rescue Equipment">Rescue Equipment</option>
+              <option value="Motor Vehicle">Motor Vehicle</option>
+              <option value="Other Property">Other Property</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="itemICSNumber">ICS Number</label>
+            <input type="text" id="itemICSNumber" class="form-input" placeholder="e.g., ICS-2026-001" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="itemQuantity">Quantity *</label>
+            <input type="number" id="itemQuantity" class="form-input" min="1" placeholder="0" required />
+          </div>
+
+          <div class="form-group">
+            <label for="itemStatus">Status *</label>
+            <select id="itemStatus" class="form-select" required>
+              <option value="Good">Good</option>
+              <option value="Broken">Broken</option>
+              <option value="Missing">Missing</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="itemLocation">Found in</label>
+          <input type="text" id="itemLocation" class="form-input" placeholder="e.g., Office Room A, Storage..." />
+        </div>
+
+        <div class="form-group">
+          <label for="itemRemarks">Remarks</label>
+          <input type="text" id="itemRemarks" class="form-input" placeholder="Additional notes..." />
+        </div>
+
+        <div class="form-group">
+          <label for="itemImage">Upload Image</label>
+          <label class="file-input-wrapper" for="itemImage">
+            <input type="file" id="itemImage" class="file-input" accept="image/png,image/jpeg" />
+            <span class="file-label">Choose an image file (.png, .jpg)</span>
+          </label>
+          <div id="imagePreview" class="image-preview"></div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-submit">Save Item</button>
+          <button type="button" class="btn-cancel" id="btn-cancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal for Comparison -->
+  <div id="comparison-modal-overlay" class="modal-overlay" style="display: none;">
+    <div class="modal-box" style="max-width: 90vw; width: 1200px;">
+      <div class="modal-header">
+        <h3>Audit Comparison</h3>
+        <button class="modal-close" id="comparison-modal-close" aria-label="Close modal">×</button>
+      </div>
+      <div id="comparison-content" class="p-4 space-y-4">
+        <div class="text-center p-8" id="comparison-loading">
+          <p class="text-slate-500">Loading comparison...</p>
+        </div>
+        <div id="comparison-results" class="hidden">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 text-center">
+            <div class="p-4 bg-green-100 border border-green-200 rounded-lg">
+              <div class="text-2xl font-bold text-green-700" id="unchanged-count">0</div>
+              <div class="text-sm font-medium text-green-600">Unchanged</div>
+            </div>
+            <div class="p-4 bg-sky-100 border border-sky-200 rounded-lg">
+              <div class="text-2xl font-bold text-sky-700" id="modified-count">0</div>
+              <div class="text-sm font-medium text-sky-600">Modified</div>
+            </div>
+            <div class="p-4 bg-blue-100 border border-blue-200 rounded-lg">
+              <div class="text-2xl font-bold text-blue-700" id="new-count">0</div>
+              <div class="text-sm font-medium text-blue-600">New Items</div>
+            </div>
+            <div class="p-4 bg-red-100 border border-red-200 rounded-lg">
+              <div class="text-2xl font-bold text-red-700" id="missing-count">0</div>
+              <div class="text-sm font-medium text-red-600">Missing Items</div>
+            </div>
+          </div>
+          <div class="table-wrapper" style="max-height: 60vh; overflow-y: auto;">
+            <table class="inventory-table">
+              <thead>
+                <tr>
+                  <th class="col-item">Item</th>
+                  <th class="col-category">Category</th>
+                  <th class="col-description">Description</th>
+                  <th class="col-quantity">Quantity</th>
+                  <th class="col-status">Status</th>
+                  <th class="col-remarks">Remarks</th>
+                  <th class="col-actions">Change</th>
+                </tr>
+              </thead>
+              <tbody id="comparison-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+        <div id="no-history-message" class="hidden text-center p-8">
+          <i class="fas fa-history text-4xl text-slate-400 mb-4"></i>
+          <h4 class="text-lg font-semibold text-slate-700">No Previous Audit Found</h4>
+          <p class="text-slate-500">There is no historical audit data for this office to compare against. This feature
+            will be available after you complete and save the current inventory, which creates the first snapshot.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Viewer Modal -->
+  <div id="image-viewer-overlay" class="image-viewer-overlay">
+    <div class="image-viewer-container">
+      <button id="image-viewer-close" class="image-viewer-close" aria-label="Close image">✕</button>
+      <img id="image-viewer-image" src="" alt="Item Image" class="image-viewer-image" />
+    </div>
+  </div>
+
+  <script src="../lib/sql-wasm.js"></script>
+  <script src="../javascript/sqlite-db.js"></script>
+  <script src="../javascript/analytics.js"></script>
+  <script src="../javascript/inventory.js"></script>
+  <script>
+    /* ============================================================
+     * COMPARE AUDITS VIEW - State Management & Conditional Render
+     * ============================================================ */
+
+    // --- 1. COMPONENT STRUCTURE & STATE MANAGEMENT ---
+    // State variable for compare mode toggle
+    let isCompareMode = false;
+
+    // Get or create the compare view container
+    function getCompareViewContainer() {
+      let container = document.getElementById('compare-view-container');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'compare-view-container';
+        container.className = 'compare-view-container';
+        container.style.display = 'none'; // Hidden by default
+        document.querySelector('.audit-workspace.active').appendChild(container);
+      }
+      return container;
+    }
+
+    // Function to toggle compare mode
+    function toggleCompareMode() {
+      isCompareMode = !isCompareMode;
+
+      const addItemBtn = document.getElementById('btn-add-item');
+      const backToInventoryBtn = document.getElementById('btn-back-to-inventory');
+      const compareAuditBtn = document.getElementById('btn-compare-audit');
+      const compareAuditViewBtn = document.getElementById('btn-compare-audit-view');
+      const compareViewContainer = getCompareViewContainer();
+      const tableWrapper = document.querySelector('.table-wrapper');
+
+      if (isCompareMode) {
+        // Show compare view, hide main inventory list
+        compareViewContainer.style.display = 'block';
+        if (tableWrapper) tableWrapper.style.display = 'none';
+
+        // Toggle visibility of Component 2 (Add / Back to Inventory)
+        if (addItemBtn) addItemBtn.classList.add('hidden');
+        if (backToInventoryBtn) backToInventoryBtn.classList.remove('hidden');
+
+        // Toggle visibility of Component 3 (Compare Audits / Compare Audits View)
+        if (compareAuditBtn) compareAuditBtn.classList.add('hidden');
+        if (compareAuditViewBtn) compareAuditViewBtn.classList.add('hidden');
+
+        renderComparisonView();
+      } else {
+        // Hide compare view, show main inventory list
+        compareViewContainer.style.display = 'none';
+        if (tableWrapper) tableWrapper.style.display = 'block';
+
+        // Toggle visibility of Component 2 (Add / Back to Inventory)
+        if (addItemBtn) addItemBtn.classList.remove('hidden');
+        if (backToInventoryBtn) backToInventoryBtn.classList.add('hidden');
+
+        // Toggle visibility of Component 3 (Compare Audits / Compare Audits View)
+        if (compareAuditBtn) compareAuditBtn.classList.remove('hidden');
+        if (compareAuditViewBtn) compareAuditViewBtn.classList.add('hidden');
+      }
+    }
+
+    // Render the comparison view with two-column layout
+    async function renderComparisonView() {
+      const container = getCompareViewContainer();
+
+      const barangay = getActiveBarangay();
+      const office = getActiveOffice();
+
+      if (!office) {
+        container.innerHTML = `
+          <div class="flex flex-col items-center justify-center p-12 text-center text-slate-500 mt-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
+            <i class="fas fa-exclamation-triangle text-5xl mb-4 text-amber-500"></i>
+            <p class="text-lg font-semibold text-slate-700">Mangyaring pumili ng opisina upang maghambing.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Strictly query historical data dynamically for the selected office
+      const historicalItems = await SRAuditDB.inventory.getLatestHistory(barangay, office);
+
+      // The current dataset is strictly derived from real-time global state (inventoryData)
+      const currentItems = inventoryData || [];
+
+      // Handle Empty State Scenarios: If office has zero items, swap for empty panel
+      if (currentItems.length === 0) {
+        container.innerHTML = `
+          <div class="flex flex-col items-center justify-center p-12 text-center text-slate-500 mt-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
+            <i class="fas fa-box-open text-5xl mb-4 text-slate-300"></i>
+            <p class="text-lg font-semibold text-slate-700">No items available to compare for this office.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Map comparison data dynamically from historical and live items
+      const histMap = new Map();
+      historicalItems.forEach(item => {
+        histMap.set(item.itemName.toLowerCase().trim(), item);
+      });
+
+      const comparisonData = [];
+      const processedHistNames = new Set();
+
+      currentItems.forEach(curr => {
+        const key = curr.itemName.toLowerCase().trim();
+        const hist = histMap.get(key);
+        if (hist) {
+          processedHistNames.add(key);
+          let discrepancy = 'No Changes';
+          let discrepancyClass = 'bg-slate-100 text-slate-600';
+          
+          const currQty = Number(curr.quantity) || 0;
+          const histQty = Number(hist.quantity) || 0;
+
+          if (currQty === histQty) {
+            discrepancy = 'No Changes';
+            discrepancyClass = 'bg-slate-100 text-slate-600';
+          } else if (currQty > histQty) {
+            const diff = currQty - histQty;
+            discrepancy = `Surplus (+${diff})`;
+            discrepancyClass = 'bg-sky-100 text-sky-700 font-bold';
+          } else {
+            const diff = histQty - currQty;
+            discrepancy = `Missing (-${diff})`;
+            discrepancyClass = 'bg-red-100 text-red-700 font-bold';
+          }
+
+          comparisonData.push({
+            itemName: curr.itemName,
+            category: curr.category,
+            classification: curr.location || 'Pangunahing Asset',
+            statusJan: hist.status.toLowerCase(),
+            statusMar: curr.status.toLowerCase(),
+            discrepancy: discrepancy,
+            discrepancyClass: discrepancyClass,
+            action: curr.remarks || 'Ok',
+            pastImg: hist.image || '',
+            currentImg: curr.image || ''
+          });
+        } else {
+          // New item (Fresh insert)
+          comparisonData.push({
+            itemName: curr.itemName,
+            category: curr.category,
+            classification: curr.location || 'Bagong Asset',
+            statusJan: '—',
+            statusMar: curr.status.toLowerCase(),
+            discrepancy: 'New Item',
+            discrepancyClass: 'bg-blue-100 text-blue-700 font-bold',
+            action: curr.remarks || 'Verify Receipt',
+            pastImg: '',
+            currentImg: curr.image || ''
+          });
+        }
+      });
+
+      container.innerHTML = `
+        <!-- SECTION 1: Hambing ng Seksyon (Section Comparison) -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 mb-6 shadow-sm mt-4">
+          <h3 class="text-lg font-bold text-slate-800 mb-4">Section Comparison</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+            <!-- Jan 2026 Audit (Past) -->
+            <div class="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-50 p-4 text-center">
+              <span class="absolute top-4 left-4 bg-green-500 text-white text-xs px-2.5 py-1 rounded-full font-semibold uppercase tracking-wider">Jan 2026 Audit (Status: Passed)</span>
+              <div class="h-48 w-full flex items-center justify-center bg-slate-100 rounded-lg overflow-hidden mb-3">
+                <img id="past-audit-img" src="" alt="Past Audit Photo" class="h-full w-full object-cover hidden" />
+                <div id="past-audit-placeholder" class="text-slate-400 text-5xl flex flex-col items-center gap-2">
+                  <i class="fas fa-camera"></i>
+                </div>
+              </div>
+              <p class="text-sm text-slate-500 font-medium">Past Inventory Session Image</p>
+            </div>
+            <!-- Mar 2026 Audit (Current) -->
+            <div class="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-50 p-4 text-center">
+              <span class="absolute top-4 left-4 bg-amber-500 text-white text-xs px-2.5 py-1 rounded-full font-semibold uppercase tracking-wider">Mar 2026 Audit (Status: Notice Issued)</span>
+              <div class="h-48 w-full flex items-center justify-center bg-slate-100 rounded-lg overflow-hidden mb-3">
+                <img id="current-audit-img" src="" alt="Current Audit Photo" class="h-full w-full object-cover hidden" />
+                <div id="current-audit-placeholder" class="text-slate-400 text-5xl flex flex-col items-center gap-2">
+                  <i class="fas fa-camera-retro"></i>
+                </div>
+              </div>
+              <p class="text-sm text-slate-500 font-medium">Current Inventory Session Image</p>
+            </div>
+          </div>
+
+          <!-- Timeline Connector -->
+          <div class="mt-8 px-8">
+            <div class="relative flex items-center justify-between">
+              <div class="absolute left-0 right-0 h-1.5 bg-slate-200 -z-0 rounded-full"></div>
+              <div class="absolute left-0 w-1/2 h-1.5 bg-yellow-400 -z-0 rounded-full"></div>
+              
+              <div class="relative z-10 flex flex-col items-start">
+                <div class="w-6 h-6 rounded-full bg-green-600 border-4 border-white shadow flex items-center justify-center"></div>
+                <span class="text-xs font-bold text-slate-700 mt-2">Jan 2026 Audit</span>
+                <span class="text-[10px] font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded border border-green-200 mt-1">Status: Passed</span>
+              </div>
+              
+              <div class="relative z-10 flex flex-col items-end">
+                <div class="w-6 h-6 rounded-full border-4 border-white shadow flex items-center justify-center" style="background-color: #f59e0b;"></div>
+                <span class="text-xs font-bold text-slate-700 mt-2">Mar 2026 Audit</span>
+                <span class="text-[10px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 mt-1">Status: Notice Issued</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 2: Hambing ng Listahan (Integrated Inventory Comparison) -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mb-6">
+          <h3 class="text-lg font-bold text-slate-800 mb-4">Integrated Inventory Comparison</h3>
+          
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b-2 border-slate-100 bg-slate-50">
+                  <th class="py-4 px-6 text-sm font-bold text-slate-600 uppercase tracking-wider">Item Profile (Name & Classification)</th>
+                  <th class="py-4 px-6 text-sm font-bold text-slate-600 uppercase tracking-wider text-center">Status: Jan '26</th>
+                  <th class="py-4 px-6 text-sm font-bold text-slate-600 uppercase tracking-wider text-center">Status: Mar '26</th>
+                  <th class="py-4 px-6 text-sm font-bold text-slate-600 uppercase tracking-wider text-center">Discrepancy</th>
+                  <th class="py-4 px-6 text-sm font-bold text-slate-600 uppercase tracking-wider">Action Log</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                ${comparisonData.map((row, index) => {
+                  const statusJanIcon = row.statusJan === 'good' 
+                    ? '<i class="fas fa-check-circle text-green-500 text-xl"></i>' 
+                    : row.statusJan === '—'
+                      ? '<span class="text-slate-400">—</span>'
+                      : '<i class="fas fa-times-circle text-red-500 text-xl"></i>';
+                  
+                  const statusMarIcon = row.statusMar === 'good' 
+                    ? '<i class="fas fa-check-circle text-green-500 text-xl"></i>' 
+                    : row.statusMar === 'missing'
+                      ? '<i class="fas fa-times-circle text-red-500 text-xl"></i>'
+                      : '<i class="fas fa-times-circle text-red-500 text-xl"></i>';
+
+                  return `
+                    <tr class="audit-item-row hover:bg-slate-50 transition-all cursor-pointer border-l-4 border-transparent"
+                        data-past-img="${row.pastImg || ''}" 
+                        data-current-img="${row.currentImg || ''}">
+                      <td class="py-4 px-6">
+                        <div class="font-bold text-slate-800">${row.itemName}</div>
+                        <div class="text-xs text-slate-500 font-medium">${row.category} | Found in: ${row.classification}</div>
+                      </td>
+                      <td class="py-4 px-6 text-center">${statusJanIcon}</td>
+                      <td class="py-4 px-6 text-center">${statusMarIcon}</td>
+                      <td class="py-4 px-6 text-center">
+                        <span class="inline-block text-xs font-bold px-3 py-1 rounded-full ${row.discrepancyClass}">
+                          ${row.discrepancy}
+                        </span>
+                      </td>
+                      <td class="py-4 px-6" onclick="event.stopPropagation()">
+                        <input type="text" class="comparison-action-input w-full border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400" data-index="${index}" value="${row.action}" placeholder="Enter action details..." />
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="flex justify-end mt-8 border-t border-slate-100 pt-6">
+            <button id="btn-submit-comparison" class="bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold py-3.5 px-8 rounded-xl transition-all shadow-md uppercase tracking-wider text-sm flex items-center gap-2 hover:-translate-y-0.5 active:translate-y-0">
+              <i class="fas fa-check-double"></i> Submit Inventory Comparison
+            </button>
+          </div>
+        </div>
+      `;
+
+      // Helper function to update images dynamically
+      function updateComparisonImages(rowElement) {
+        const pastImgPath = rowElement.dataset.pastImg;
+        const currentImgPath = rowElement.dataset.currentImg;
+
+        const pastImg = document.getElementById('past-audit-img');
+        const pastPlaceholder = document.getElementById('past-audit-placeholder');
+        const currentImg = document.getElementById('current-audit-img');
+        const currentPlaceholder = document.getElementById('current-audit-placeholder');
+
+        if (pastImgPath) {
+          pastImg.src = pastImgPath;
+          pastImg.classList.remove('hidden');
+          pastPlaceholder.classList.add('hidden');
+        } else {
+          pastImg.src = '';
+          pastImg.classList.add('hidden');
+          pastPlaceholder.classList.remove('hidden');
+          pastPlaceholder.innerHTML = '<div class="flex flex-col items-center gap-2"><i class="fas fa-image-slash text-slate-300"></i><span class="text-xs text-slate-400 font-normal">No Image Available</span></div>';
+        }
+
+        if (currentImgPath) {
+          currentImg.src = currentImgPath;
+          currentImg.classList.remove('hidden');
+          currentPlaceholder.classList.add('hidden');
+        } else {
+          currentImg.src = '';
+          currentImg.classList.add('hidden');
+          currentPlaceholder.classList.remove('hidden');
+          currentPlaceholder.innerHTML = '<div class="flex flex-col items-center gap-2"><i class="fas fa-image-slash text-slate-300"></i><span class="text-xs text-slate-400 font-normal">No Image Available</span></div>';
+        }
+      }
+
+      // Add row selection and click functionality
+      const rows = container.querySelectorAll('.audit-item-row');
+      rows.forEach(row => {
+        row.addEventListener('click', () => {
+          rows.forEach(r => r.classList.remove('bg-yellow-50', 'border-yellow-400'));
+          row.classList.add('bg-yellow-50', 'border-yellow-400');
+          updateComparisonImages(row);
+        });
+      });
+
+      // Bind input listeners for Column 5 Tala ng Aksyon distinct index references
+      container.querySelectorAll('.comparison-action-input').forEach(input => {
+        input.addEventListener('input', (e) => {
+          const idx = parseInt(e.target.dataset.index, 10);
+          if (comparisonData[idx]) {
+            comparisonData[idx].action = e.target.value;
+          }
+        });
+      });
+
+      // Automatically select first row on load
+      if (rows.length > 0) {
+        rows[0].click();
+      }
+
+      const submitBtn = document.getElementById('btn-submit-comparison');
+      if (submitBtn) {
+        submitBtn.addEventListener('click', () => {
+          alert('Comparison successfully submitted and logged!');
+          toggleCompareMode();
+        });
+      }
+    }
+
+    // Initialize compare mode toggle event listener
+    document.addEventListener('DOMContentLoaded', function () {
+      const compareAuditBtn = document.getElementById('btn-compare-audit');
+      if (compareAuditBtn) {
+        compareAuditBtn.addEventListener('click', toggleCompareMode);
+      }
+      const compareAuditViewBtn = document.getElementById('btn-compare-audit-view');
+      if (compareAuditViewBtn) {
+        compareAuditViewBtn.addEventListener('click', toggleCompareMode);
+      }
+
+      // Handle back button when in compare mode
+      document.addEventListener('click', function (e) {
+        const backBtn = e.target.closest('#btn-back-to-inventory');
+        if (backBtn && isCompareMode) {
+          toggleCompareMode();
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

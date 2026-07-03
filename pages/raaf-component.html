@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RAAF Audit Workflow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .no-print { display: block; }
+      .print-table th, .print-table td { border: 1px solid #101828; }
+      @media print {
+        body { background: white !important; color: black !important; }
+        .no-print { display: none !important; }
+        #raaf-print { box-shadow: none !important; margin: 0 !important; }
+        .print-table { border-collapse: collapse !important; }
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-900">
+    <div class="max-w-6xl mx-auto p-6 space-y-8">
+      <header class="space-y-3">
+        <p class="text-sm uppercase tracking-[0.3em] text-slate-500">Financial Audit Workflow</p>
+        <h1 class="text-3xl font-semibold">RAAF Data Entry + Print Preview</h1>
+        <p class="text-slate-600 max-w-3xl">Complete the audit inputs below and the live print-ready RAAF document updates instantly. Use the button to print or save the official RAAF PDF.</p>
+      </header>
+
+      <main class="space-y-6 no-print">
+        <section class="space-y-6">
+          <div class="flex items-center justify-between gap-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div>
+              <p class="text-slate-500 uppercase tracking-[0.2em] text-xs">Connected RAAF Forms</p>
+              <h2 class="text-xl font-semibold">Separate Audit Forms</h2>
+              <p class="text-sm text-slate-600 max-w-2xl">Each form below is separate but still connected to the official RAAF print document. Complete the fields and the live RAAF preview will reflect the values immediately.</p>
+            </div>
+          </div>
+
+          <div class="grid gap-6 lg:grid-cols-2">
+            <div class="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+              <h3 class="text-base font-semibold text-slate-900">Approved Budget</h3>
+              <label class="space-y-2 text-sm text-slate-700">
+                Authorized Amount
+                <input data-sync-target="approved-budget" id="input-approved-budget" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="0.00" />
+              </label>
+              <label class="space-y-2 text-sm text-slate-700">
+                Remarks / Recommendations
+                <textarea data-sync-target="approved-budget-remarks" id="input-approved-budget-remarks" rows="4" class="w-full resize-none rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="Approved budget remarks..."></textarea>
+              </label>
+            </div>
+
+            <div class="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+              <h3 class="text-base font-semibold text-slate-900">Fidelity Bond</h3>
+              <label class="space-y-2 text-sm text-slate-700">
+                Coverage Amount
+                <input data-sync-target="bond-coverage" id="input-bond-coverage" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="0.00" />
+              </label>
+              <label class="space-y-2 text-sm text-slate-700">
+                Expiry Date
+                <input data-sync-target="bond-expiry" id="input-bond-expiry" type="date" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+              </label>
+              <label class="space-y-2 text-sm text-slate-700">
+                Remarks / Recommendations
+                <textarea data-sync-target="bond-remarks" id="input-bond-remarks" rows="4" class="w-full resize-none rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="Bond remarks..."></textarea>
+              </label>
+            </div>
+
+            <div class="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+              <h3 class="text-base font-semibold text-slate-900">Bank Book</h3>
+              <label class="space-y-2 text-sm text-slate-700">
+                Ending Balance
+                <input data-sync-target="bank-book-balance" id="input-bank-book-balance" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="0.00" />
+              </label>
+              <label class="space-y-2 text-sm text-slate-700">
+                Remarks / Recommendations
+                <textarea data-sync-target="bank-book-remarks" id="input-bank-book-remarks" rows="4" class="w-full resize-none rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="Bank book remarks..."></textarea>
+              </label>
+            </div>
+
+            <div class="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+              <h3 class="text-base font-semibold text-slate-900">Check Register Book & Physical Checks</h3>
+              <div class="grid gap-4 sm:grid-cols-3">
+                <label class="space-y-2 text-sm text-slate-700">
+                  Beginning Balance Qty
+                  <input data-sync-target="checks-bb-qty" id="input-checks-bb-qty" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                </label>
+                <label class="space-y-2 text-sm text-slate-700">
+                  From Serial
+                  <input data-sync-target="checks-bb-from" id="input-checks-bb-from" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                </label>
+                <label class="space-y-2 text-sm text-slate-700">
+                  To Serial
+                  <input data-sync-target="checks-bb-to" id="input-checks-bb-to" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                </label>
+              </div>
+              <div class="grid gap-4 sm:grid-cols-3">
+                <label class="space-y-2 text-sm text-slate-700">
+                  Receipt Qty
+                  <input data-sync-target="checks-rc-qty" id="input-checks-rc-qty" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                </label>
+                <label class="space-y-2 text-sm text-slate-700">
+                  From Serial
+                  <input data-sync-target="checks-rc-from" id="input-checks-rc-from" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                </label>
+                <label class="space-y-2 text-sm text-slate-700">
+                  To Serial
+                  <input data-sync-target="checks-rc-to" id="input-checks-rc-to" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                </label>
+              </div>
+              <div class="grid gap-4 sm:grid-cols-3">
+                <label class="space-y-2 text-sm text-slate-700">
+                  Ending Balance Qty
+                  <input data-sync-target="checks-eb-qty" id="input-checks-eb-qty" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                </label>
+                <label class="space-y-2 text-sm text-slate-700">
+                  From Serial
+                  <input data-sync-target="checks-eb-from" id="input-checks-eb-from" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                </label>
+                <label class="space-y-2 text-sm text-slate-700">
+                  To Serial
+                  <input data-sync-target="checks-eb-to" id="input-checks-eb-to" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                </label>
+              </div>
+              <label class="space-y-2 text-sm text-slate-700">
+                Remarks / Recommendations
+                <textarea data-sync-target="checks-remarks" id="input-checks-remarks" rows="4" class="w-full resize-none rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="Notes for checks..."></textarea>
+              </label>
+            </div>
+
+            <div class="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+              <h3 class="text-base font-semibold text-slate-900">Accountable Form 51 (AF-51 Receipts)</h3>
+              <div class="grid gap-4 sm:grid-cols-3">
+                <label class="space-y-2 text-sm text-slate-700">
+                  Beginning Balance Qty
+                  <input data-sync-target="af51-bb-qty" id="input-af51-bb-qty" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                </label>
+                <label class="space-y-2 text-sm text-slate-700">
+                  From Serial
+                  <input data-sync-target="af51-bb-from" id="input-af51-bb-from" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="XXXX" />
+                </label>
+                <label class="space-y-2 text-sm text-slate-700">
+                  To Serial
+                  <input data-sync-target="af51-bb-to" id="input-af51-bb-to" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="XXXX" />
+                </label>
+              </div>
+              <div class="grid gap-4 sm:grid-cols-3">
+                <label class="space-y-2 text-sm text-slate-700">
+                  Receipt Qty
+                  <input data-sync-target="af51-rc-qty" id="input-af51-rc-qty" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                </label>
+                <label class="space-y-2 text-sm text-slate-700">
+                  From Serial
+                  <input data-sync-target="af51-rc-from" id="input-af51-rc-from" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                </label>
+                <label class="space-y-2 text-sm text-slate-700">
+                  To Serial
+                  <input data-sync-target="af51-rc-to" id="input-af51-rc-to" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                </label>
+              </div>
+              <div class="grid gap-4 sm:grid-cols-3">
+                <label class="space-y-2 text-sm text-slate-700">
+                  Ending Balance Qty
+                  <input data-sync-target="af51-eb-qty" id="input-af51-eb-qty" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                </label>
+                <label class="space-y-2 text-sm text-slate-700">
+                  From Serial
+                  <input data-sync-target="af51-eb-from" id="input-af51-eb-from" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                </label>
+                <label class="space-y-2 text-sm text-slate-700">
+                  To Serial
+                  <input data-sync-target="af51-eb-to" id="input-af51-eb-to" type="text" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" />
+                </label>
+              </div>
+              <label class="space-y-2 text-sm text-slate-700">
+                Remarks / Recommendations
+                <textarea data-sync-target="af51-remarks" id="input-af51-remarks" rows="4" class="w-full resize-none rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="Notes for AF-51 receipts..."></textarea>
+              </label>
+            </div>
+
+            <div class="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+              <h3 class="text-base font-semibold text-slate-900">COA Form 0016</h3>
+              <label class="space-y-2 text-sm text-slate-700">
+                Total Collections Logged
+                <input data-sync-target="0016-collections" id="input-rcd-collections" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="0.00" />
+              </label>
+              <label class="space-y-2 text-sm text-slate-700">
+                Remarks / Recommendations
+                <textarea data-sync-target="0016-remarks" id="input-rcd-remarks" rows="4" class="w-full resize-none rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="COA 0016 remarks..."></textarea>
+              </label>
+            </div>
+
+            <div class="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+              <h3 class="text-base font-semibold text-slate-900">Checks</h3>
+              <label class="space-y-2 text-sm text-slate-700">
+                Total Checks Reviewed
+                <input data-sync-target="checks-summary-count" id="input-checks-summary-count" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="0" />
+              </label>
+              <label class="space-y-2 text-sm text-slate-700">
+                Remarks / Recommendations
+                <textarea data-sync-target="checks-summary-remarks" id="input-checks-summary-remarks" rows="4" class="w-full resize-none rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="Checks remarks..."></textarea>
+              </label>
+            </div>
+
+            <div class="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+              <h3 class="text-base font-semibold text-slate-900">Disbursement Voucher (DV)</h3>
+              <label class="space-y-2 text-sm text-slate-700">
+                Total Count
+                <input data-sync-target="dv-count" id="input-dv-count" type="number" min="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="0" />
+              </label>
+              <label class="space-y-2 text-sm text-slate-700">
+                Remarks / Recommendations
+                <textarea data-sync-target="dv-remarks" id="input-dv-remarks" rows="4" class="w-full resize-none rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none" placeholder="DV remarks..."></textarea>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p class="text-sm font-medium text-slate-700">Ready for printing</p>
+            <p class="text-sm text-slate-500">Only the official RAAF document will appear on print/PDF.</p>
+          </div>
+          <button id="printBtn" class="inline-flex items-center justify-center rounded-3xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-slate-700">Print Official RAAF Document</button>
+        </div>
+      </main>
+
+      <section id="raaf-print" class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+        <div class="text-center space-y-2">
+          <p class="text-sm uppercase tracking-[0.2em] text-slate-500">Report of Accountability for Accountable Forms</p>
+          <h2 class="text-2xl font-semibold">RAAF Official Document</h2>
+          <p class="text-sm text-slate-600">Live audit data reflected in the official RAAF table below.</p>
+        </div>
+
+        <div class="mt-8 overflow-x-auto">
+          <table class="print-table min-w-full border-separate border-spacing-0 text-sm leading-relaxed">
+            <thead class="bg-slate-100 text-slate-900">
+              <tr>
+                <th rowspan="3" class="px-4 py-3 text-left">Name of Form</th>
+                <th colspan="3" class="px-4 py-3">Beginning Balance</th>
+                <th colspan="3" class="px-4 py-3">Ending Balance</th>
+              </tr>
+              <tr>
+                <th rowspan="2" class="px-4 py-3">QTY</th>
+                <th colspan="2" class="px-4 py-3">Inclusive Serial Nos</th>
+                <th rowspan="2" class="px-4 py-3">QTY</th>
+                <th colspan="2" class="px-4 py-3">Inclusive Serial Nos</th>
+              </tr>
+              <tr>
+                <th class="px-4 py-3">From</th>
+                <th class="px-4 py-3">To</th>
+                <th class="px-4 py-3">From</th>
+                <th class="px-4 py-3">To</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="bg-slate-50 text-slate-700">
+                <td class="px-4 py-3 font-semibold">B. Without Money Value</td>
+                <td class="px-4 py-3" colspan="6"></td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 text-left font-medium">Official Receipts (AF-51)</td>
+                <td id="pr-af51-bb-qty" class="px-4 py-3 text-center">0</td>
+                <td id="pr-af51-bb-from" class="px-4 py-3"></td>
+                <td id="pr-af51-bb-to" class="px-4 py-3"></td>
+                <td id="pr-af51-eb-qty" class="px-4 py-3 text-center">0</td>
+                <td id="pr-af51-eb-from" class="px-4 py-3"></td>
+                <td id="pr-af51-eb-to" class="px-4 py-3"></td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 text-left font-medium">Checks</td>
+                <td id="pr-checks-bb-qty" class="px-4 py-3 text-center">0</td>
+                <td id="pr-checks-bb-from" class="px-4 py-3"></td>
+                <td id="pr-checks-bb-to" class="px-4 py-3"></td>
+                <td id="pr-checks-eb-qty" class="px-4 py-3 text-center">0</td>
+                <td id="pr-checks-eb-from" class="px-4 py-3"></td>
+                <td id="pr-checks-eb-to" class="px-4 py-3"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-6 rounded-3xl border border-slate-200 bg-slate-50 p-5">
+          <p class="text-sm uppercase tracking-[0.2em] text-slate-500">Connected Form Summary</p>
+          <div class="mt-4 overflow-x-auto">
+            <table class="min-w-full text-sm">
+              <thead class="bg-white text-slate-700">
+                <tr>
+                  <th class="px-4 py-3 text-left">Form</th>
+                  <th class="px-4 py-3 text-left">Value</th>
+                  <th class="px-4 py-3 text-left">Remarks / Recommendations</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200 text-slate-700">
+                <tr>
+                  <td class="px-4 py-3">Approved Budget</td>
+                  <td id="pr-approved-budget" class="px-4 py-3"></td>
+                  <td id="pr-approved-budget-remarks" class="px-4 py-3"></td>
+                </tr>
+                <tr class="bg-slate-50">
+                  <td class="px-4 py-3">Fidelity Bond</td>
+                  <td id="pr-bond-coverage" class="px-4 py-3"></td>
+                  <td id="pr-bond-remarks" class="px-4 py-3"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">Bank Book</td>
+                  <td id="pr-bank-book-balance" class="px-4 py-3"></td>
+                  <td id="pr-bank-book-remarks" class="px-4 py-3"></td>
+                </tr>
+                <tr class="bg-slate-50">
+                  <td class="px-4 py-3">Check Register Book</td>
+                  <td class="px-4 py-3"></td>
+                  <td id="pr-checks-remarks" class="px-4 py-3"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">AF-51 Remarks</td>
+                  <td class="px-4 py-3"></td>
+                  <td id="pr-af51-remarks" class="px-4 py-3"></td>
+                </tr>
+                <tr class="bg-slate-50">
+                  <td class="px-4 py-3">COA Form 0016</td>
+                  <td id="pr-0016-collections" class="px-4 py-3"></td>
+                  <td id="pr-0016-remarks" class="px-4 py-3"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">Checks</td>
+                  <td id="pr-checks-summary-count" class="px-4 py-3"></td>
+                  <td id="pr-checks-summary-remarks" class="px-4 py-3"></td>
+                </tr>
+                <tr class="bg-slate-50">
+                  <td class="px-4 py-3">Disbursement Voucher (DV)</td>
+                  <td id="pr-dv-count" class="px-4 py-3"></td>
+                  <td id="pr-dv-remarks" class="px-4 py-3"></td>
+                </tr>
+                <tr class="bg-slate-50">
+                  <td class="px-4 py-3">Check Register Remarks</td>
+                  <td class="px-4 py-3"></td>
+                  <td id="pr-checks-remarks" class="px-4 py-3"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="mt-8 grid gap-6 lg:grid-cols-2">
+          <div class="rounded-3xl border border-slate-200 p-5">
+            <p class="text-sm font-semibold text-slate-800">Audit Notes</p>
+            <p class="mt-3 text-sm text-slate-600">Use the audit workspace for remarks, but only the official RAAF grid is printed.</p>
+          </div>
+          <div class="rounded-3xl border border-slate-200 p-5">
+            <p class="text-sm font-semibold text-slate-800">Certification</p>
+            <p class="mt-3 text-sm text-slate-600">This RAAF document is prepared for printing with signature slots below.</p>
+          </div>
+        </div>
+
+        <div class="mt-8 grid gap-6 lg:grid-cols-2">
+          <div class="space-y-2">
+            <div class="h-0.5 w-full bg-slate-900"></div>
+            <p class="text-sm text-slate-700">Barangay Treasurer</p>
+          </div>
+          <div class="space-y-2">
+            <div class="h-0.5 w-full bg-slate-900"></div>
+            <p class="text-sm text-slate-700">Date</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const syncFields = [
+        'approved-budget','approved-budget-remarks','bond-coverage','bond-expiry','bond-remarks','bank-book-balance','bank-book-remarks','dv-count','dv-remarks','0016-collections','0016-remarks','checks-summary-count','checks-summary-remarks','af51-remarks','checks-remarks',
+        'af51-bb-qty','af51-bb-from','af51-bb-to','af51-rc-qty','af51-rc-from','af51-rc-to','af51-eb-qty','af51-eb-from','af51-eb-to',
+        'checks-bb-qty','checks-bb-from','checks-bb-to','checks-rc-qty','checks-rc-from','checks-rc-to','checks-eb-qty','checks-eb-from','checks-eb-to'
+      ];
+
+      function syncInputs() {
+        syncFields.forEach((field) => {
+          const input = document.querySelector(`[data-sync-target='${field}']`);
+          const output = document.getElementById(`pr-${field}`);
+          if (output) {
+            output.textContent = input ? input.value : '';
+          }
+        });
+      }
+
+      document.querySelectorAll('[data-sync-target]').forEach((input) => {
+        input.addEventListener('input', syncInputs);
+      });
+
+      document.getElementById('printBtn').addEventListener('click', () => window.print());
+      syncInputs();
+
+      // ===== SERIAL NUMBER AUTOMATION & CASCADING =====
+      function initSerialAutomation(sequence) {
+        const activeSequence = sequence.filter(step => document.getElementById(step.qtyId) !== null);
+
+        let isCalculating = false;
+
+        function padSerial(num, length) {
+          if (isNaN(num) || num === null || num === undefined) return '';
+          return String(num).padStart(length || 4, '0');
+        }
+
+        function calculateAndCascade() {
+          if (isCalculating) return;
+          isCalculating = true;
+
+          try {
+            let lastActiveToSerial = null;
+            let paddingLength = 4;
+
+            activeSequence.forEach((step, index) => {
+              const qtyEl = document.getElementById(step.qtyId);
+              const fromEl = document.getElementById(step.fromId);
+              const toEl = document.getElementById(step.toId);
+
+              if (!qtyEl || !fromEl || !toEl) return;
+
+              if (index > 0 && lastActiveToSerial !== null && !isNaN(lastActiveToSerial)) {
+                const nextFromVal = lastActiveToSerial + 1;
+                fromEl.value = padSerial(nextFromVal, paddingLength);
+                // Trigger input events for synchronization/preview logic
+                fromEl.dispatchEvent(new Event('input'));
+              }
+
+              const qty = parseInt(qtyEl.value, 10) || 0;
+              const fromValStr = fromEl.value.trim();
+
+              if (fromValStr && qty > 0) {
+                paddingLength = fromValStr.length;
+                const fromValNum = parseInt(fromValStr, 10);
+                if (!isNaN(fromValNum)) {
+                  const toValNum = fromValNum + qty - 1;
+                  toEl.value = padSerial(toValNum, paddingLength);
+                  lastActiveToSerial = toValNum;
+                  toEl.dispatchEvent(new Event('input'));
+                }
+              } else {
+                toEl.value = '';
+                toEl.dispatchEvent(new Event('input'));
+                if (fromValStr && !isNaN(parseInt(fromValStr, 10))) {
+                  lastActiveToSerial = parseInt(fromValStr, 10) - 1;
+                }
+              }
+            });
+          } finally {
+            isCalculating = false;
+          }
+        }
+
+        activeSequence.forEach((step) => {
+          const qtyEl = document.getElementById(step.qtyId);
+          const fromEl = document.getElementById(step.fromId);
+
+          if (qtyEl) qtyEl.addEventListener('input', calculateAndCascade);
+          if (fromEl) fromEl.addEventListener('input', calculateAndCascade);
+        });
+      }
+
+      // Initialize automation for AF-51 Receipts
+      initSerialAutomation([
+        { qtyId: 'input-af51-bb-qty', fromId: 'input-af51-bb-from', toId: 'input-af51-bb-to' },
+        { qtyId: 'input-af51-rc-qty', fromId: 'input-af51-rc-from', toId: 'input-af51-rc-to' },
+        { qtyId: 'input-af51-eb-qty', fromId: 'input-af51-eb-from', toId: 'input-af51-eb-to' }
+      ]);
+
+      // Initialize automation for Checks
+      initSerialAutomation([
+        { qtyId: 'input-checks-bb-qty', fromId: 'input-checks-bb-from', toId: 'input-checks-bb-to' },
+        { qtyId: 'input-checks-rc-qty', fromId: 'input-checks-rc-from', toId: 'input-checks-rc-to' },
+        { qtyId: 'input-checks-eb-qty', fromId: 'input-checks-eb-from', toId: 'input-checks-eb-to' }
+      ]);
+    </script>
+  </body>
+</html>
