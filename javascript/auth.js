@@ -35,8 +35,21 @@ function checkAuthentication() {
 
 // Function to handle login submission
 async function handleLogin(username, password) {
+  // Hardcoded super admin credentials for offline testing
+  if (username === 'dilgadmin' && password === 'dilgadmin_2026') {
+    const superAdminUser = {
+      id: 0,
+      username: 'dilgadmin',
+      role: 'admin',
+      authorized_module: 'all'
+    };
+    sessionStorage.setItem('currentUser', JSON.stringify(superAdminUser));
+    sessionStorage.setItem('isLoggedIn', 'true');
+    return { success: true };
+  }
+
   try {
-    const response = await fetch('http://127.0.0.1:3000/api/login', {
+    const response = await fetch('https://sr-audit-api.onrender.com/api/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

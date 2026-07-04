@@ -3,7 +3,7 @@
 
 const SYNC_DB_NAME = 'AuditSyncDB';
 const SYNC_STORE_NAME = 'mutation_queue';
-const SERVER_API_BASE = 'http://127.0.0.1:3000/api';
+const SERVER_API_BASE = 'https://sr-audit-api.onrender.com/api';
 
 /**
  * Initializes/Opens the IndexedDB synchronization database
@@ -146,7 +146,7 @@ async function sendPayloadToServer(endpoint, action, payload) {
  */
 async function processOfflineQueue() {
   console.log('Online status detected. Processing background sync queue...');
-  
+
   let db;
   try {
     db = await openSyncDB();
@@ -158,9 +158,9 @@ async function processOfflineQueue() {
   // FIFO loop execution
   let tx = db.transaction(SYNC_STORE_NAME, 'readonly');
   let store = tx.objectStore(SYNC_STORE_NAME);
-  
+
   const request = store.getAll();
-  
+
   request.onsuccess = async (e) => {
     const mutations = e.target.result;
     if (!mutations || mutations.length === 0) {
@@ -186,7 +186,7 @@ async function processOfflineQueue() {
         const writeTx = db.transaction(SYNC_STORE_NAME, 'readwrite');
         const writeStore = writeTx.objectStore(SYNC_STORE_NAME);
         writeStore.delete(record.id);
-        
+
         await new Promise((resolve, reject) => {
           writeTx.oncomplete = () => resolve();
           writeTx.onerror = () => reject(writeTx.error);

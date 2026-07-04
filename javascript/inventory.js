@@ -148,7 +148,7 @@ async function loadInventory() {
   const currentUser = JSON.parse(currentUserStr);
 
   try {
-    const response = await fetch(`http://127.0.0.1:3000/api/inventory?barangay_id=${currentUser.barangay_id}&user_role=${currentUser.role}`);
+    const response = await fetch(`https://sr-audit-api.onrender.com/api/inventory?barangay_id=${currentUser.barangay_id}&user_role=${currentUser.role}`);
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
@@ -193,7 +193,7 @@ function openModal(indexToEdit = null) {
   currentImage = null;
   elItemForm.reset();
   elImagePreview.innerHTML = '';
-  
+
   if (indexToEdit !== null) {
     const item = inventoryData[indexToEdit];
     if (elModalHeaderTitle) elModalHeaderTitle.textContent = 'Edit Item';
@@ -212,7 +212,7 @@ function openModal(indexToEdit = null) {
   } else {
     if (elModalHeaderTitle) elModalHeaderTitle.textContent = 'Add New Item';
   }
-  
+
   elModalOverlay.classList.add('active');
 }
 
@@ -315,7 +315,7 @@ async function renderInventory(data = null) {
       </td>
       <td class="col-quantity">
         <span class="item-quantity">${item.quantity}</span>
-        <span class="quantity-units">units</span>
+        <span class="quantity-units">PCS</span>
       </td>
       <td class="col-image">${imageHTML}</td>
       <td class="col-location">
@@ -388,7 +388,7 @@ async function handleFormSubmit(event) {
 
   // Load the current active items collection array
   const activeOfficeItems = await loadInventory();
-  
+
   if (editingIndex !== null) {
     // Modify existing item
     activeOfficeItems[editingIndex] = { ...activeOfficeItems[editingIndex], ...newItemObject };
@@ -396,7 +396,7 @@ async function handleFormSubmit(event) {
     // Fix Array State Push: Append new item using push method on the collection array
     activeOfficeItems.push(newItemObject);
   }
-  
+
   await saveInventory(activeOfficeItems);
   await renderInventory(activeOfficeItems);
   closeModal();
