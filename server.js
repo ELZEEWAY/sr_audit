@@ -2,6 +2,7 @@
 // Secure Node.js server using parameterized queries for PostgreSQL (pg) and Express.
 
 const express = require('express');
+const path = require('path');
 const { Pool } = require('pg');
 const cors = require('cors');
 require('dotenv').config();
@@ -9,6 +10,18 @@ require('dotenv').config();
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// 1. Tell Express to serve all your CSS, images, and JS styling folders
+app.use(express.static(path.join(__dirname, 'style')));
+app.use(express.static(path.join(__dirname, 'pages')));
+app.use(express.static(path.join(__dirname, 'javascript')));
+app.use(express.static(path.join(__dirname, 'Assets')));
+app.use(express.static(path.join(__dirname, 'lib')));
+
+// 2. Tell Express to redirect the root web link directly to your index.html page
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 // Initialize PG connection pool
 const pool = new Pool({
