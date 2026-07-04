@@ -1,0 +1,9 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "buildCommand": "echo 'Skipping Electron build'"
+  },
+  "deploy": {
+    "startCommand": "node server/server.js"
+  }
+}
