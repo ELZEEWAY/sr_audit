@@ -4,7 +4,7 @@
   "description": "STANDALONE ELECTRON DESKTOP SHELL FOR DILG SANTA ROSA BARANGAY AUDIT SYSTEM",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
+    "start": "node server.js",
     "build": "electron-builder --win"
   },
   "dependencies": {
