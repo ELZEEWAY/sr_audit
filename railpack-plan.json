@@ -1,0 +1,7 @@
+{
+  "packages": {
+    "apt": {
+      "build": ["wine"]
+    }
+  }
+}
