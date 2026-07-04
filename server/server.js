@@ -9,7 +9,7 @@ const auth = require('./middleware/auth');
 const syncRouter = require('./routes/sync');
 
 const app = express();
-const PORT = process.env.SYNC_SERVER_PORT || 3000;
+const PORT = process.env.PORT || process.env.SYNC_SERVER_PORT || 3000;
 
 app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' })); // allow large payloads (images/PDFs)
@@ -21,6 +21,6 @@ app.get('/', (req, res) => {
   res.send('Sync server is running');
 });
 
-app.listen(PORT, () => {
-  console.log(`🔄 Sync server listening on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🔄 Sync server listening on http://0.0.0.0:${PORT}`);
 });
